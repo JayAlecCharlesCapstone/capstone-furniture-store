@@ -1,11 +1,8 @@
-const Pool = require("pg").Pool;
+const {Client} = require("pg");
 
-const pool = new Pool({
-    user: "postgres",
-    password: "",
-    host: "localhost",
-    port: 5432,
-    database: "jac_furniturestore"
-});
+let DATABASE_URL = process.env.DATABASE_URL 
 
-module.exports = pool;
+const client = new Client({connectionString:DATABASE_URL, ssl: process.env.NODE_ENV === 'production'? {rejectUnauthorized:false}:undefined})
+
+module.exports = client
+
