@@ -1,10 +1,11 @@
 {
   "name": "server",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server",
+    "dev": "nodemon server"
   },
   "author": "",
   "license": "ISC",
@@ -12,5 +13,10 @@
     "cors": "^2.8.5",
     "express": "^4.19.2",
     "pg": "^8.11.3"
+  },
+  "keywords": [],
+  "description": "",
+  "devDependencies": {
+    "nodemon": "^3.1.0"
   }
 }

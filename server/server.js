@@ -9,7 +9,9 @@ app.use(cors());
 app.use(express.json());
 
 //ROUTES
-
+app.get("/api", (req,res) => {
+    res.json({"users": ["userOne", "userTwo", "userThree"]})
+})
 
 
 app.listen(5000, () => {
