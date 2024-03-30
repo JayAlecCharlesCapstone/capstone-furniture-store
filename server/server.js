@@ -1,19 +1,33 @@
+require("dotenv").config();
 const express = require("express");
 const app = express();
-const cors = require("cors");
-const pool = require("./db")
 
-
-//middleware
-app.use(cors());
-app.use(express.json());
 
 //ROUTES
-app.get("/api", (req,res) => {
-    res.json({"users": ["userOne", "userTwo", "userThree"]})
+
+// get all products
+app.get("/api/v1/products", (req, res) =>{
+    res.json({
+        status: "success",
+        data: {
+            product: ["Chair","Mattress","Bed Frame","Couch"]
+        }
+    })
+});
+
+//get single product
+app.get("/api/v1/products/:id", (req,res) => {
+    console.log(req.params);
+})
+
+//create a product
+app.post("/api/v1/products", (req,res) => {
+    console.log(req);
 })
 
 
-app.listen(5000, () => {
-    console.log("server has started on port 5000")
+port = process.env.PORT || 3000
+app.listen(port, () => {
+    console.log(`Server is up and listening on port ${port}`);
 });
+
