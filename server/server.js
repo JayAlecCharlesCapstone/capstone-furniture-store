@@ -191,6 +191,23 @@ app.post("/api/v1/customer/register", async (req, res) => {
     }
 });
 
+//Delete a customer
+
+app.delete("/api/v1/customer/:id", async (req, res) => {
+    try {
+        const result = await db.query("DELETE FROM customers WHERE customer_id = $1",
+            [
+                req.params.id
+            ]);
+        res.status(204).json({
+            status: "success",
+        });
+    } catch (error) {
+        console.error(error);
+    }
+
+});
+
 
 
 
