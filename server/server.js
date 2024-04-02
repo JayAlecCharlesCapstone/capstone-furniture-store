@@ -9,7 +9,8 @@ app.use(morgan("dev"));
 app.use(express.json());
 
 
-//ROUTES - Products
+//ROUTES - Products//
+
 // Get all products
 app.get("/api/v1/products", async (req, res) => {
     try {
@@ -109,7 +110,7 @@ app.delete("/api/v1/products/:id", async (req, res) => {
 
 
 
-//Routes - Login/Register
+//Routes - Login/Register//
 
 
 //Get all customers
