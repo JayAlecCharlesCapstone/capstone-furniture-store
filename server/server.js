@@ -16,20 +16,33 @@ function generateToken(user) {
 //middleware
 app.use(morgan("dev"));
 app.use(express.json());
-function verifyToken(req,res,next) {
+function verifyToken(req, res, next) {
     const token = req.headers['authorization'];
     if (!token) {
-        return res.status(401).json({message: 'No token provided'})
+        return res.status(401).json({ message: 'No token provided' });
     }
     
     jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
-        if (err){
-            return res.status(403).json({message: 'Failed to authenticate token'})
+        if (err) {
+            return res.status(403).json({ message: 'Failed to authenticate token' });
         }
         req.user = decoded;
-        nect();
-    })
+        next(); 
+    });
 }
+
+async function startServer() {
+    try {
+        await db.connectToDatabase();
+        app.listen(process.env.port, () => {
+            console.log(`Server is up and listening on port ${process.env.port}`);
+        });
+    } catch (error) {
+        console.error("Error starting server:", error.message);
+        process.exit(1); 
+    }
+}
+
 
 
 //ROUTES - Products//
@@ -386,8 +399,6 @@ app.post("/api/v1/cart", async (req, res) => {
 
 
 
-port = process.env.PORT || 3000
-app.listen(port, () => {
-    console.log(`Server is up and listening on port ${port}`);
-});
 
+
+startServer();

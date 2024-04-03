@@ -1,4 +1,4 @@
-const { client, createCustomers, createProducts, getAllCustomers } = require("./db/index.js");
+const { client, createCustomers, createProducts, getAllCustomers, getAllProducts } = require("./db/index.js");
 
 async function dropTables() {
     try {
@@ -107,12 +107,38 @@ async function createInitialCustomers() {
             email: "jayh@example.com",
             phone: "1234567890",
             username: "jjhay",
-            password: "password123",
+            password: "password123", 
             street_address: "123 Main St",
             city: "Anytown",
             state: "IL",
             country: "USA",
             postal_code: "12345"
+        });
+
+        await createCustomers({
+            name: "Alec W",
+            email: "Alecw@example.com",
+            phone: "1234567890",
+            username: "alecw",
+            password: "password321", 
+            street_address: "321 Main St",
+            city: "Anytown",
+            state: "LA",
+            country: "USA",
+            postal_code: "54321"
+        });
+
+        await createCustomers({
+            name: "Lil Charles",
+            email: "lilcharles@example.com",
+            phone: "5432167890",
+            username: "lilcharles",
+            password: "password987", 
+            street_address: "987 Main St",
+            city: "Anytown",
+            state: "GA",
+            country: "USA",
+            postal_code: "56789"
         });
         console.log('Initial customers created successfully!');
     } catch (err) {
@@ -120,6 +146,8 @@ async function createInitialCustomers() {
         throw err;
     }
 }
+
+
 
 async function createInitialProducts() {
     try {
@@ -167,24 +195,32 @@ async function rebuildDb() {
         await createTables();
         await createInitialCustomers();
         await createInitialProducts();
+        
+        
+        return true; 
     } catch (err) {
         console.error("Error rebuilding database:", err.message);
         throw err;
-    } finally {
-        await client.end();
     }
 }
+
+
 
 async function testDB() {
     try {
         console.log("Testing database...");
         const customers = await getAllCustomers();
         console.log("Customers:", customers);
+        const products = await getAllProducts();
+        console.log("Products:", products)
+        await client.end(); 
     } catch (err) {
         console.error("Error testing database:", err.message);
         throw err;
     }
 }
+
+
 
 
 rebuildDb()
