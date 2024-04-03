@@ -1,4 +1,5 @@
-import { createCustomers, createProducts, getAllCustomers } from "./db";
+const { createCustomers, createProducts, getAllCustomers } = require("./db/index.js");
+
 
 async function dropTables(){
     try{
