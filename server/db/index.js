@@ -1,5 +1,10 @@
 const { Pool, Client } = require("pg");
 
+const client = new Client({
+    connectionString: process.env.DATABASE_URL || 'postgres://localhost:5432/jac_furniturestore',
+    ssl: process.env.NODE_ENV ==='production' ? {rejectUnauthorized: false} : undefined,
+});
+
 const pool = new Pool();
 
 async function createCustomers({
@@ -130,5 +135,6 @@ module.exports = {
     updateProduct,
     getCustomersById,
     updateCustomers,
+    client,
 
 };
