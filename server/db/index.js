@@ -18,17 +18,27 @@ async function createCustomers({
     postal_code
 }) {
     try {
-        const { rows: [customer] } = await client.query(`
-        INSERT INTO customers(name, email, phone, street_address, city, state, country, postal_code)
-        VALUES($1, $2, $3, $4, $5, $6, $7, $8)
+        const addressQuery = `
+        INSERT INTO addresses(street_address, city, state, country, postal_code)
+        VALUES($1, $2, $3, $4, $5)
+        RETURNING address_id;
+        `;
+        const { rows: [address] } = await client.query(addressQuery, [street_address, city, state, country, postal_code]);
+
+        const customerQuery = `
+        INSERT INTO customers(name, email, phone, address_id)
+        VALUES($1, $2, $3, $4)
         ON CONFLICT (email) DO NOTHING
         RETURNING *;
-        `, [name, email, phone, street_address, city, state, country, postal_code]);
-        return customer;
+        `;
+        const { rows: [customer] } = await client.query(customerQuery, [name, email, phone, address.address_id]);
+
+        return { customer, address };
     } catch (err) {
         throw err;
     }
 }
+
 
 async function updateCustomers(id, fields = {}) {
     const setString = Object.keys(fields).map(
