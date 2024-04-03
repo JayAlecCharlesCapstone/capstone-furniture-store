@@ -12,16 +12,16 @@ async function createCustomers({
     country,
     postal_code
 
-}) {
-    try {
-        const { rows: [customers] } = await client.query(`
+}){
+    try{
+        const{rows: [customers]} = await client.query(`
         INSERT INTO customers(name, email, phone, street_address, city, state, country, postal_code)
         VALUES($1, $2, $3, $4, $5, $6, $7, $8)
-        ON CONFLICT (email, username) DO NOTHING
+        ON CONFLICT (customers) DO NOTHING
         RETURNING *;
         `, [name, email, phone, street_address, city, state, country, postal_code]);
         return customers;
-    } catch (err) {
+    }catch(err){
         throw err;
     }
 }
@@ -42,7 +42,7 @@ async function updateCustomers(id, fields = {}) {
         RETURNING *;
         `, Object.values(fields));
         return user;
-    } catch (err) {
+    }catch (err){
         throw err;
     }
 }
