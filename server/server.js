@@ -177,25 +177,25 @@ app.get("/api/v1/customer/address", async (req, res) => {
 // Register a customer
 app.post("/api/v1/customer/register", async (req, res) => {
     try {
-        const { name, email, phone, street_address, city, state, country, postal_code, username, password } = req.body;
+        const { name, email, phone, username, password, street_address, city, state, country, postal_code } = req.body;
 
         const saltRounds = 10;
         const salt = await bcrypt.genSalt(saltRounds);
-
         const hashedPassword = await bcrypt.hash(password, salt);
 
         await db.query('BEGIN');
 
+        
         const addressResult = await db.query(
             'INSERT INTO Addresses (street_address, city, state, country, postal_code) VALUES ($1, $2, $3, $4, $5) RETURNING address_id',
             [street_address, city, state, country, postal_code]
         );
-
         const addressId = addressResult.rows[0].address_id;
 
+       
         const customerResult = await db.query(
-            'INSERT INTO Customers (name, email, phone, address_id, username, password_hash, password_salt) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
-            [name, email, phone, addressId, username, hashedPassword, salt]
+            'INSERT INTO Customers (name, email, phone, username, password_hash, password_salt, address_id) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
+            [name, email, phone, username, hashedPassword, salt, addressId]
         );
 
         await db.query('COMMIT');
@@ -215,6 +215,9 @@ app.post("/api/v1/customer/register", async (req, res) => {
         });
     }
 });
+
+
+
 
 
 

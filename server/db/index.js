@@ -16,17 +16,16 @@ async function createCustomers({
     state,
     country,
     postal_code
-
-}){
-    try{
-        const{rows: [customers]} = await client.query(`
+}) {
+    try {
+        const { rows: [customer] } = await client.query(`
         INSERT INTO customers(name, email, phone, street_address, city, state, country, postal_code)
         VALUES($1, $2, $3, $4, $5, $6, $7, $8)
-        ON CONFLICT (customers) DO NOTHING
+        ON CONFLICT (email) DO NOTHING
         RETURNING *;
         `, [name, email, phone, street_address, city, state, country, postal_code]);
-        return customers;
-    }catch(err){
+        return customer;
+    } catch (err) {
         throw err;
     }
 }
@@ -95,12 +94,12 @@ async function createProducts({
 }) {
     try {
         const { rows: [products] } = await client.query(`
-        INSERT INTO products("name, description, price, stock_quantity) 
+        INSERT INTO products("name", description, price, stock_quantity) 
         VALUES($1, $2, $3, $4)
         RETURNING *;
       `, [name, description, price, stock_quantity]);
 
-
+        return products; 
     } catch (error) {
         throw error;
     }
@@ -113,14 +112,15 @@ async function updateProduct(productId, fields = {}) {
 
     try {
         if (setString.length > 0) {
-            await client.query(`
+            const { rows } = await client.query(`
             UPDATE products
             SET ${setString}
-            WHERE id= ${productId}
+            WHERE product_id = $${Object.keys(fields).length + 1}
             RETURNING *;
-            `, Object.values(fields));
-        }
+            `, [...Object.values(fields), productId]);
 
+            return rows[0]; 
+        }
     } catch (err) {
         throw err;
     }
