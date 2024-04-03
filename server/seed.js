@@ -1,42 +1,32 @@
-
-const { client, createCustomers, createProducts, getAllCustomers } = require("./db/index.js");
+const { client, createCustomers, createProducts, getAllCustomers, getAllProducts } = require("./db/index.js");
 
 async function dropTables() {
     try {
-        console.log("creating tables");
-
+        console.log("Dropping tables...");
 
         await client.query(`
-     DROP TABLE IF EXISTS CUSTOMERS;
-     DROP TABLE IF EXISTS ADDRESSES;
-     DROP TABLE IF EXISTS PRODUCTS;
-     DROP TABLE IF EXISTS ORDERS
-     DROP TABLE IF EXISTS ORDERS_ITEMS;
-     DROP TABLE IF EXISTS ADMIN_USERS;
-     DROP TABLE IF EXISTS CART
+            DROP TABLE IF EXISTS Cart CASCADE;
+            DROP TABLE IF EXISTS Order_Items CASCADE;
+            DROP TABLE IF EXISTS Orders CASCADE;
+            DROP TABLE IF EXISTS Products CASCADE;
+            DROP TABLE IF EXISTS Addresses CASCADE;
+            DROP TABLE IF EXISTS Customers CASCADE;
+            DROP TABLE IF EXISTS Admin_Users CASCADE;
+        `);
 
-     `);
-        console.log("finished dropping tables!")
+        console.log("Tables dropped successfully!");
     } catch (err) {
-        console.err("Error dropping tables!")
+        console.error("Error dropping tables:", err.message);
         throw err;
     }
 }
 
+
 async function createTables() {
     try {
-        console.log("starting to build tables...")
+        console.log("Creating tables...");
+
         await client.query(`
-        CREATE TABLE Customers (
-            customer_id SERIAL PRIMARY KEY,
-            username VARCHAR(100) NOT NULL,
-            password VARCHAR(100) NOT NULL,
-            name VARCHAR(100) NOT NULL,
-            email VARCHAR(100) NOT NULL UNIQUE,
-            phone VARCHAR(20),
-            address_id INT,
-            FOREIGN KEY (address_id) REFERENCES Addresses(address_id)
-        );
 
         CREATE TABLE Addresses (
             address_id SERIAL PRIMARY KEY,
@@ -45,6 +35,17 @@ async function createTables() {
             state VARCHAR(100),
             country VARCHAR(100) NOT NULL,
             postal_code VARCHAR(20) NOT NULL
+        );
+
+        CREATE TABLE Customers (
+            customer_id SERIAL PRIMARY KEY,
+            username VARCHAR(100) NOT NULL UNIQUE,
+            password VARCHAR(100) NOT NULL,
+            name VARCHAR(100) NOT NULL,
+            email VARCHAR(100) NOT NULL UNIQUE,
+            phone VARCHAR(20),
+            address_id INT,
+            FOREIGN KEY (address_id) REFERENCES Addresses(address_id)
         );
 
         CREATE TABLE Products (
@@ -90,39 +91,67 @@ async function createTables() {
         );
     `);
 
-        console.log("finished building tables!")
+
+        console.log("Tables created successfully!");
     } catch (err) {
-        console.err("error building tables!")
+        console.error("Error creating tables:", err.message);
         throw err;
     }
 }
 
 async function createInitialCustomers() {
     try {
-        console.log("starting to create users...");
+        console.log("Creating initial customers...");
         await createCustomers({
-            username: 'jay',
-            password: 'jay123',
-            name: 'Jay Haymes',
-            email: 'jay@example.com',
-            phone: '12345678910',
+            name: "Jay H",
+            email: "jayh@example.com",
+            phone: "1234567890",
+            username: "jjhay",
+            password: "password123", 
             street_address: "123 Main St",
-            city: "anytown",
+            city: "Anytown",
             state: "IL",
             country: "USA",
             postal_code: "12345"
-
         });
-        console.log('finished creating users');
+
+        await createCustomers({
+            name: "Alec W",
+            email: "Alecw@example.com",
+            phone: "1234567890",
+            username: "alecw",
+            password: "password321", 
+            street_address: "321 Main St",
+            city: "Anytown",
+            state: "LA",
+            country: "USA",
+            postal_code: "54321"
+        });
+
+        await createCustomers({
+            name: "Lil Charles",
+            email: "lilcharles@example.com",
+            phone: "5432167890",
+            username: "lilcharles",
+            password: "password987", 
+            street_address: "987 Main St",
+            city: "Anytown",
+            state: "GA",
+            country: "USA",
+            postal_code: "56789"
+        });
+        console.log('Initial customers created successfully!');
     } catch (err) {
-        console.err('err creating user!');
+        console.error('Error creating initial customers:', err.message);
         throw err;
     }
 }
 
+
+
 async function createInitialProducts() {
     try {
-        console.log('starting to create products...')
+        console.log('Creating initial products...');
         await createProducts({
             name: 'Office Chair',
             description: 'A seat designed for use in office or workspace',
@@ -151,40 +180,49 @@ async function createInitialProducts() {
             stock_quantity: '47'
         });
 
+        console.log('Initial products created successfully!');
     } catch (err) {
-        console.log("error creating products")
+        console.error('Error creating initial products:', err.message);
         throw err;
     }
 }
 
-
 async function rebuildDb() {
     try {
-        client.connect();
+        await client.connect();
 
         await dropTables();
         await createTables();
         await createInitialCustomers();
         await createInitialProducts();
+        
+        
+        return true; 
     } catch (err) {
-        console.log("error during rebuilddb")
+        console.error("Error rebuilding database:", err.message);
         throw err;
     }
 }
 
+
+
 async function testDB() {
     try {
+        console.log("Testing database...");
         const customers = await getAllCustomers();
-        console.log("result:", customers)
+        console.log("Customers:", customers);
+        const products = await getAllProducts();
+        console.log("Products:", products)
+        await client.end(); 
     } catch (err) {
-        console.log("error during rebuild")
-        throw error;
+        console.error("Error testing database:", err.message);
+        throw err;
     }
 }
 
 
+
+
 rebuildDb()
     .then(testDB)
-    .catch(console.error)
-// .finally(()=> client.end())
-
+    .catch(console.error);
