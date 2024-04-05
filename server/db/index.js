@@ -8,6 +8,10 @@ const client = new Client({
     port: process.env.PGPORT
 });
 
+// connectionString: process.env.DATABASE_URL || 'postgres://localhost:5432/jac_furniturestore',
+// ssl: process.env.NODE_ENV ==='production' ? {rejectUnauthorized: false} : undefined,
+
+
 async function connectToDatabase() {
     try {
         await client.connect();
@@ -18,8 +22,6 @@ async function connectToDatabase() {
     }
 }
 
-// connectionString: process.env.DATABASE_URL || 'postgres://localhost:5432/jac_furniturestore',
-// ssl: process.env.NODE_ENV ==='production' ? {rejectUnauthorized: false} : undefined,
 
 
 const pool = new Pool({
@@ -188,5 +190,4 @@ module.exports = {
     getAllProducts,
     client,
     connectToDatabase
-
 };

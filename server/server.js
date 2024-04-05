@@ -184,20 +184,21 @@ app.get("/api/v1/customer/address", async (req, res) => {
     }
 
 });
-
-
-
 // Register a customer
 app.post("/api/v1/customer/register", async (req, res) => {
     try {
         const { name, email, phone, username, password, street_address, city, state, country, postal_code } = req.body;
 
+        console.log("Received registration request with password:", password);
+
         const saltRounds = 10;
         const salt = await bcrypt.genSalt(saltRounds);
+        console.log("Generated salt:", salt);
+
         const hashedPassword = await bcrypt.hash(password, salt);
+        console.log("Generated hashed password:", hashedPassword);
 
         await db.query('BEGIN');
-
         
         const addressResult = await db.query(
             'INSERT INTO Addresses (street_address, city, state, country, postal_code) VALUES ($1, $2, $3, $4, $5) RETURNING address_id',
@@ -205,11 +206,11 @@ app.post("/api/v1/customer/register", async (req, res) => {
         );
         const addressId = addressResult.rows[0].address_id;
 
-       
         const customerResult = await db.query(
             'INSERT INTO Customers (name, email, phone, username, password_hash, password_salt, address_id) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
             [name, email, phone, username, hashedPassword, salt, addressId]
         );
+        
 
         await db.query('COMMIT');
 
@@ -228,6 +229,7 @@ app.post("/api/v1/customer/register", async (req, res) => {
         });
     }
 });
+
 
 
 
