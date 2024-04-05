@@ -344,12 +344,12 @@ app.delete("/api/v1/customer/:id", async (req, res) => {
 app.get("/api/v1/cart", async (req, res) => {
     console.log(req.user)
     try {
-        // Check if req.user exists and has the 'id' property
+        
         if (!req.user || !req.user.id) {
             return res.status(401).json({ message: 'Unauthorized' });
         }
 
-        const customerId = req.user.id; // Extract customer_id from req.user
+        const customerId = req.user.id; 
 
         const cartItems = await db.query(`
             SELECT 
@@ -365,7 +365,7 @@ app.get("/api/v1/cart", async (req, res) => {
                 products p ON c.product_id = p.product_id
             WHERE 
                 c.customer_id = $1
-        `, [customerId]); // Use customerId extracted from req.user
+        `, [customerId]); 
 
         res.json({
             status: "success",
