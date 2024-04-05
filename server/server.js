@@ -334,7 +334,7 @@ app.get("/api/v1/cart", async (req, res) => {
             status: "success",
             results: result.rows.length,
             data: {
-                customers: result.rows
+                cart: result.rows
             }
         })
 
