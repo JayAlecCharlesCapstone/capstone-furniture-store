@@ -16,20 +16,34 @@ function generateToken(user) {
 //middleware
 app.use(morgan("dev"));
 app.use(express.json());
+
 function verifyToken(req, res, next) {
-    const token = req.headers['authorization'];
+    const authHeader = req.headers['authorization'];
+
+    if (!authHeader) {
+        return res.status(401).json({ message: 'No token provided' });
+    }
+
+    const token = authHeader.split(' ')[1]; 
+
     if (!token) {
         return res.status(401).json({ message: 'No token provided' });
     }
-    
+
     jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
         if (err) {
+            console.error('Token Verification Error:', err);
             return res.status(403).json({ message: 'Failed to authenticate token' });
         }
-        req.user = decoded;
+        req.user = decoded; 
+        console.log('Decoded User:', req.user); 
         next(); 
     });
 }
+app.use('/api/v1/cart', verifyToken); 
+
+
+
 
 async function startServer() {
     try {
@@ -184,21 +198,20 @@ app.get("/api/v1/customer/address", async (req, res) => {
     }
 
 });
+
+
+
 // Register a customer
 app.post("/api/v1/customer/register", async (req, res) => {
     try {
         const { name, email, phone, username, password, street_address, city, state, country, postal_code } = req.body;
 
-        console.log("Received registration request with password:", password);
-
         const saltRounds = 10;
         const salt = await bcrypt.genSalt(saltRounds);
-        console.log("Generated salt:", salt);
-
         const hashedPassword = await bcrypt.hash(password, salt);
-        console.log("Generated hashed password:", hashedPassword);
 
         await db.query('BEGIN');
+
         
         const addressResult = await db.query(
             'INSERT INTO Addresses (street_address, city, state, country, postal_code) VALUES ($1, $2, $3, $4, $5) RETURNING address_id',
@@ -206,11 +219,11 @@ app.post("/api/v1/customer/register", async (req, res) => {
         );
         const addressId = addressResult.rows[0].address_id;
 
+       
         const customerResult = await db.query(
             'INSERT INTO Customers (name, email, phone, username, password_hash, password_salt, address_id) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
             [name, email, phone, username, hashedPassword, salt, addressId]
         );
-        
 
         await db.query('COMMIT');
 
@@ -229,7 +242,6 @@ app.post("/api/v1/customer/register", async (req, res) => {
         });
     }
 });
-
 
 
 
@@ -328,23 +340,57 @@ app.delete("/api/v1/customer/:id", async (req, res) => {
 
 //Routes - Orders/Cart
 
-//Get all cart items 
+// Get all cart items with product details
 app.get("/api/v1/cart", async (req, res) => {
+    console.log(req.user)
     try {
-        const result = await db.query("SELECT * FROM cart");
+        if (!req.user || !req.user.id) {
+            return res.status(401).json({ message: 'Unauthorized' });
+        }
+
+        const customerId = req.user.id; 
+        const cartItems = await db.query(`
+            SELECT 
+                c.cart_id,
+                c.customer_id,
+                c.product_id,
+                c.quantity,
+                p.name AS product_name,
+                p.price AS product_price
+            FROM 
+                cart c
+            INNER JOIN 
+                products p ON c.product_id = p.product_id
+            WHERE 
+                c.customer_id = $1
+        `, [customerId]); 
+
         res.json({
             status: "success",
-            results: result.rows.length,
+            results: cartItems.rows.length,
             data: {
-                cart: result.rows
+                cart: cartItems.rows.map(item => ({
+                    cart_id: item.cart_id,
+                    customer_id: item.customer_id,
+                    product_id: item.product_id,
+                    product_name: item.product_name,
+                    product_price: item.product_price,
+                    quantity: item.quantity
+                }))
             }
-        })
-
+        });
     } catch (error) {
-        console.error(error);
+        console.error('Error fetching cart items:', error);
+        res.status(500).json({
+            status: "error",
+            message: "An error occurred while fetching cart items."
+        });
     }
-
 });
+
+
+
+
 
 //Add item to cart
 app.post("/api/v1/cart", async (req, res) => {
