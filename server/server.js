@@ -11,7 +11,15 @@ const jwt = require('jsonwebtoken')
 function generateToken(user) {
     return jwt.sign({ id: user.customer_id, email: user.email }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
+};
+function generateAdminToken(adminUser) {
+    return jwt.sign(
+        { id: adminUser.admin_id, username: adminUser.username, role: 'admin' },
+        process.env.JWT_SECRET,
+        { expiresIn: '1h' }
+    );
 }
+
 
 //middleware
 app.use(morgan("dev"));
@@ -39,8 +47,20 @@ function verifyToken(req, res, next) {
         console.log('Decoded User:', req.user); 
         next(); 
     });
+};
+
+
+function isAdmin(req, res, next) {
+    if (req.user && req.user.role === 'admin') {
+        next(); 
+    } else {
+        res.status(403).json({ message: 'Access forbidden: Admin role required' });
+    }
 }
+
+
 app.use('/api/v1/cart', verifyToken); 
+app.use('/api/v1/admin/users', verifyToken)
 
 
 
@@ -56,6 +76,80 @@ async function startServer() {
         process.exit(1); 
     }
 }
+
+
+
+//ROUTES - ADMIN//
+
+//Create Admin User
+app.post('/api/v1/admin/register', async(req,res) => {
+    try {
+        const {username, password} = req.body;
+
+        const saltRounds = 10;
+        const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+        const result = await db.query(
+            'INSERT INTO admin_users (username, password) VALUES ($1, $2) RETURNING *',
+            [username, hashedPassword]
+        );
+
+        res.status(201).json({
+            status: 'success',
+            data: {
+                adminUser: result.rows[0]
+            }
+        });
+    } catch (error) {
+        console.error(error)
+    }
+});
+
+//Login as Admin User
+app.post('/api/v1/admin/login', async (req, res) => {
+    try {
+        const { username, password } = req.body;
+
+        const adminUser = await db.query('SELECT * FROM admin_users WHERE username = $1', [username]);
+        if (adminUser.rows.length === 0) {
+            return res.status(401).json({ message: 'Invalid username or password' });
+        }
+
+        const isPasswordValid = await bcrypt.compare(password, adminUser.rows[0].password);
+        if (!isPasswordValid) {
+            return res.status(401).json({ message: 'Invalid username or password' });
+        }
+
+        const token = generateAdminToken(adminUser.rows[0]);
+        res.status(200).json({ token });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error logging in as admin' });
+    }
+});
+app.get("/api/v1/protected/admintoken", verifyToken, isAdmin, async (req, res) => {
+    res.status(200).json({ message: 'Access granted: Admin token endpoint' });
+});
+
+
+
+//Get all admin users
+app.get('/api/v1/admin/users', isAdmin, async (req, res) => {
+    try {
+        const result = await db.query('SELECT * FROM admin_users');
+        res.json({
+            status: 'success',
+            results: result.rows.length,
+            data: {
+                adminUsers: result.rows
+            }
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error fetching admin users' });
+    }
+});
+
 
 
 
@@ -318,7 +412,6 @@ app.post("/api/v1/customer/login", async (req, res) => {
 app.get("/api/v1/protected/token", verifyToken, async (req,res) => {
     res.status(200).json({message: 'Access granted'});
 })
-
 
 //Delete a customer
 
