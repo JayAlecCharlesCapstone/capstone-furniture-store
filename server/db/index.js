@@ -35,18 +35,18 @@ async function createAdminUser({
     username,
     password_hash,
     password_salt
-}){
+}) {
     try {
         const adminQuery = `
         INSERT INTO admin_users(username, password_hash, password_salt)
         VALUES ($1, $2, $3)
         RETURNING admin_id
         `
-        const {rows} = await client.query(adminQuery, [username, password_hash, password_salt]);
+        const { rows } = await client.query(adminQuery, [username, password_hash, password_salt]);
         return rows[0].admim_id;
     } catch (err) {
         console.error(err);
-    }   
+    }
 };
 
 async function getAllAdminUsers() {
@@ -88,11 +88,11 @@ async function createCustomers({
             ON CONFLICT (email) DO NOTHING
             RETURNING *;
         `;
-        const { rows: [customer] } = await client.query(customerQuery, [name, email, phone, username, password_hash,password_salt, address.address_id]);
+        const { rows: [customer] } = await client.query(customerQuery, [name, email, phone, username, password_hash, password_salt, address.address_id]);
 
         return { customer, address };
-    } catch (err) {
-        throw err;
+    } catch (error) {
+        throw error;
     }
 }
 
@@ -101,7 +101,7 @@ async function createCustomers({
 
 async function updateCustomers(id, fields = {}) {
     const setString = Object.keys(fields).map((key, index) => `"${key}"=$${index + 1}`).join(', ');
-    
+
     if (setString.length === 0) {
         return;
     }
@@ -113,10 +113,10 @@ async function updateCustomers(id, fields = {}) {
             WHERE id = $${Object.keys(fields).length + 1}
             RETURNING *;
         `, [...Object.values(fields), id]);
-        
+
         return rows[0];
-    } catch (err) {
-        throw err;
+    } catch (error) {
+        throw error;
     }
 }
 
@@ -144,7 +144,7 @@ async function getCustomersById(customerId) {
             FROM customers
             WHERE id = $1;
         `, [customerId]);
-        
+
         if (rows.length === 0) {
             throw {
                 name: "CustomerNotFoundError",
@@ -171,7 +171,7 @@ async function createProducts({
         RETURNING *;
       `, [name, description, price, stock_quantity]);
 
-        return products; 
+        return products;
     } catch (error) {
         throw error;
     }
@@ -203,10 +203,114 @@ async function updateProduct(productId, fields = {}) {
             RETURNING *;
             `, [...Object.values(fields), productId]);
 
-            return rows[0]; 
+            return rows[0];
         }
-    } catch (err) {
-        throw err;
+    } catch (error) {
+        throw error;
+    }
+};
+
+async function getAllFinalizedOrders() {
+    try {
+        const { rows } = await client.query(`
+            SELECT 
+                o.order_id,
+                o.customer_id,
+                o.order_date,
+                o.shipping_address_id,
+                oi.order_item_id,
+                oi.product_id,
+                oi.quantity,
+                oi.price_per_unit,
+                p.name AS product_name,
+                a.street_address,
+                a.city,
+                a.state,
+                a.country,
+                a.postal_code
+            FROM Orders o
+            JOIN Order_Items oi ON o.order_id = oi.order_id
+            JOIN Products p ON oi.product_id = p.product_id
+            JOIN Addresses a ON o.shipping_address_id = a.address_id
+            ORDER BY o.order_date DESC;
+        `);
+
+        const orders = [];
+        
+        rows.forEach(row => {
+            const existingOrder = orders.find(order => order.order_id === row.order_id);
+            
+            if (!existingOrder) {
+                const newOrder = {
+                    order_id: row.order_id,
+                    customer_id: row.customer_id,
+                    order_date: row.order_date,
+                    shipping_address: {
+                        street_address: row.street_address,
+                        city: row.city,
+                        state: row.state,
+                        country: row.country,
+                        postal_code: row.postal_code
+                    },
+                    items: []
+                };
+                newOrder.items.push({
+                    order_item_id: row.order_item_id,
+                    product_id: row.product_id,
+                    product_name: row.product_name,
+                    quantity: row.quantity,
+                    price_per_unit: row.price_per_unit
+                });
+                orders.push(newOrder);
+            } else {
+                existingOrder.items.push({
+                    order_item_id: row.order_item_id,
+                    product_id: row.product_id,
+                    product_name: row.product_name,
+                    quantity: row.quantity,
+                    price_per_unit: row.price_per_unit
+                });
+            }
+        });
+
+        return orders;
+
+    } catch (error) {
+        console.error("Error fetching finalized orders:", error);
+        throw error;
+    }
+}
+
+
+async function createOrder(customerId, shippingAddressId) {
+    const query = `
+        INSERT INTO Orders (customer_id, shipping_address_id)
+        VALUES ($1, $2)
+        RETURNING order_id;
+    `;
+    const values = [customerId, shippingAddressId];
+
+    try {
+        const result = await pool.query(query, values);
+        const newOrder = result.rows[0];
+        return newOrder; 
+    } catch (error) {
+        throw error;
+    }
+}
+
+
+async function createOrderItem(order_id, product_id, quantity, price_per_unit){
+    try {
+        const {rows} = await client.query(`
+        INSERT INTO Order_Items(order_id, product_id, quantity, price_per_unit)
+        VALUES ($1, $2, $3, $4)
+        RETURNING *;
+        `, [order_id, product_id, quantity, price_per_unit]);
+
+        return rows[0];
+    } catch (error) {
+        console.error(error)
     }
 }
 
@@ -222,6 +326,9 @@ module.exports = {
     getCustomersById,
     updateCustomers,
     getAllProducts,
+    createOrder,
+    createOrderItem,
+    getAllFinalizedOrders,
     client,
     connectToDatabase
 };
