@@ -1,4 +1,6 @@
-const { client, createCustomers, createProducts, getAllCustomers, getAllProducts } = require("./db/index.js");
+const bcrypt = require('bcrypt')
+const { client, createAdminUser, getAllAdminUsers, createCustomers, createProducts, getAllCustomers, getAllProducts } = require("./db/index.js");
+
 
 async function dropTables() {
     try {
@@ -39,14 +41,16 @@ async function createTables() {
 
         CREATE TABLE Customers (
             customer_id SERIAL PRIMARY KEY,
-            username VARCHAR(100) NOT NULL UNIQUE,
-            password VARCHAR(100) NOT NULL,
             name VARCHAR(100) NOT NULL,
             email VARCHAR(100) NOT NULL UNIQUE,
             phone VARCHAR(20),
+            username VARCHAR(50) NOT NULL UNIQUE,
+            password_hash VARCHAR(255),
+            password_salt VARCHAR(255),
             address_id INT,
             FOREIGN KEY (address_id) REFERENCES Addresses(address_id)
         );
+        
 
         CREATE TABLE Products (
             product_id SERIAL PRIMARY KEY,
@@ -78,7 +82,8 @@ async function createTables() {
         CREATE TABLE Admin_Users (
             admin_id SERIAL PRIMARY KEY,
             username VARCHAR(50) NOT NULL UNIQUE,
-            password VARCHAR(255) NOT NULL 
+            password_hash VARCHAR(255),
+            password_salt VARCHAR(255)
         );
 
         CREATE TABLE Cart (
@@ -99,53 +104,87 @@ async function createTables() {
     }
 }
 
+async function createInitialAdminUser(){
+    try {
+        console.log("Creating initial admin users....")
+        const username = "jjhaymes";
+        const password = "password123";
+
+        const saltRounds = 10;
+        const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+        await createAdminUser({
+            username,
+            password_hash: hashedPassword,
+            password_salt: saltRounds
+        })
+    } catch (error) {
+        console.error(error)
+    }
+}
+
 async function createInitialCustomers() {
     try {
         console.log("Creating initial customers...");
-        await createCustomers({
-            name: "Jay H",
-            email: "jayh@example.com",
-            phone: "1234567890",
-            username: "jjhay",
-            password: "password123", 
-            street_address: "123 Main St",
-            city: "Anytown",
-            state: "IL",
-            country: "USA",
-            postal_code: "12345"
-        });
 
-        await createCustomers({
-            name: "Alec W",
-            email: "Alecw@example.com",
-            phone: "1234567890",
-            username: "alecw",
-            password: "password321", 
-            street_address: "321 Main St",
-            city: "Anytown",
-            state: "LA",
-            country: "USA",
-            postal_code: "54321"
-        });
+        const customers = [
+            {
+                name: "Jay H",
+                email: "jayh@example.com",
+                phone: "1234567890",
+                username: "jjhay",
+                password: "password123",
+                street_address: "123 Main St",
+                city: "Anytown",
+                state: "IL",
+                country: "USA",
+                postal_code: "12345"
+            },
+            {
+                name: "Alec W",
+                email: "Alecw@example.com",
+                phone: "1234567890",
+                username: "alecw",
+                password: "password321",
+                street_address: "321 Main St",
+                city: "Anytown",
+                state: "LA",
+                country: "USA",
+                postal_code: "54321"
+            },
+            {
+                name: "Lil Charles",
+                email: "lilcharles@example.com",
+                phone: "5432167890",
+                username: "lilcharles",
+                password: "password987",
+                street_address: "987 Main St",
+                city: "Anytown",
+                state: "GA",
+                country: "USA",
+                postal_code: "56789"
+            }
+        ];
 
-        await createCustomers({
-            name: "Lil Charles",
-            email: "lilcharles@example.com",
-            phone: "5432167890",
-            username: "lilcharles",
-            password: "password987", 
-            street_address: "987 Main St",
-            city: "Anytown",
-            state: "GA",
-            country: "USA",
-            postal_code: "56789"
-        });
+        const saltRounds = 10;
+
+        for (const customer of customers) {
+            const { password, ...customerHashedPassword } = customer;
+            const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+            await createCustomers({
+                ...customerHashedPassword,
+                password_hash: hashedPassword,
+                password_salt: saltRounds
+            });
+        }
+
         console.log('Initial customers created successfully!');
     } catch (err) {
         console.error('Error creating initial customers:', err.message);
         throw err;
     }
-}
+};
 
 
 
@@ -193,6 +232,7 @@ async function rebuildDb() {
 
         await dropTables();
         await createTables();
+        await createInitialAdminUser();
         await createInitialCustomers();
         await createInitialProducts();
         
@@ -209,6 +249,8 @@ async function rebuildDb() {
 async function testDB() {
     try {
         console.log("Testing database...");
+        const adminUsers = await getAllAdminUsers();
+        console.log("Admin Users:", adminUsers);
         const customers = await getAllCustomers();
         console.log("Customers:", customers);
         const products = await getAllProducts();

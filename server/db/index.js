@@ -31,12 +31,43 @@ const pool = new Pool({
     port: process.env.PGPORT
 });
 
+async function createAdminUser({
+    username,
+    password_hash,
+    password_salt
+}){
+    try {
+        const adminQuery = `
+        INSERT INTO admin_users(username, password_hash, password_salt)
+        VALUES ($1, $2, $3)
+        RETURNING admin_id
+        `
+        const {rows} = await client.query(adminQuery, [username, password_hash, password_salt]);
+        return rows[0].admim_id;
+    } catch (err) {
+        console.error(err);
+    }   
+};
+
+async function getAllAdminUsers() {
+    try {
+        const { rows } = await client.query(`
+           SELECT * FROM admin_users
+        `);
+
+        return rows;
+    } catch (error) {
+        throw error;
+    }
+}
+
 async function createCustomers({
     name,
     email,
     phone,
     username,
-    password,
+    password_hash,
+    password_salt,
     street_address,
     city,
     state,
@@ -45,25 +76,26 @@ async function createCustomers({
 }) {
     try {
         const addressQuery = `
-        INSERT INTO addresses(street_address, city, state, country, postal_code)
-        VALUES($1, $2, $3, $4, $5)
-        RETURNING address_id;
+            INSERT INTO addresses(street_address, city, state, country, postal_code)
+            VALUES($1, $2, $3, $4, $5)
+            RETURNING address_id;
         `;
         const { rows: [address] } = await client.query(addressQuery, [street_address, city, state, country, postal_code]);
 
         const customerQuery = `
-        INSERT INTO customers(name, email, phone, username, password, address_id)
-        VALUES($1, $2, $3, $4, $5, $6)
-        ON CONFLICT (email) DO NOTHING
-        RETURNING *;
+            INSERT INTO customers(name, email, phone, username, password_hash, password_salt , address_id)
+            VALUES($1, $2, $3, $4, $5, $6, $7)
+            ON CONFLICT (email) DO NOTHING
+            RETURNING *;
         `;
-        const { rows: [customer] } = await client.query(customerQuery, [name, email, phone, username, password, address.address_id]);
+        const { rows: [customer] } = await client.query(customerQuery, [name, email, phone, username, password_hash,password_salt, address.address_id]);
 
         return { customer, address };
     } catch (err) {
         throw err;
     }
 }
+
 
 
 
@@ -181,6 +213,8 @@ async function updateProduct(productId, fields = {}) {
 
 module.exports = {
     query: (text, params) => pool.query(text, params),
+    createAdminUser,
+    getAllAdminUsers,
     createCustomers,
     createProducts,
     getAllCustomers,
