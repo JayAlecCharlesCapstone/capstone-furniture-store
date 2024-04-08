@@ -61,7 +61,7 @@ function isAdmin(req, res, next) {
 
 app.use('/api/v1/cart', verifyToken); 
 app.use('/api/v1/admin/users', verifyToken)
-
+app.use('/api/v1/admin/orders', verifyToken)
 
 
 
@@ -540,10 +540,9 @@ app.post("/api/v1/cart", async (req, res) => {
 // ROUTES - Orders
 
 //Get customer orders
-app.get("/api/v1/orders", async (req, res) => {
+app.get("/api/v1/orders",verifyToken, async (req, res) => {
     try {
       const customer_id = req.user.customer_id; 
-  
       const orders = await db.getAllFinalizedOrders(customer_id); 
       res.json({ status: 'success', data: orders });
     } catch (error) {
@@ -555,20 +554,13 @@ app.get("/api/v1/orders", async (req, res) => {
 //Create orders
 app.post("/api/v1/orders", async (req, res) => {
     try {
-        const { customer_id, shipping_address_id, cart } = req.body;
-
-        const newOrder = await db.createOrder(customer_id, shipping_address_id);
-        console.log(newOrder);
-
-        for (const item of cart) {
-            await db.createOrderItem(newOrder.order_id, item.product_id, item.quantity, item.price_per_unit);
-        }
-
-        res.json({ status: "success", message: "Order created successfully", order: newOrder });
-    } catch (error) {
-        console.error("Error creating order:", error);
-        res.status(500).json({ status: "error", message: "Failed to create order" });
-    }
+        const customer_id = req.user.customer_id;
+        const orders = await db.getAllFinalizedOrders(customer_id);
+        res.json({ status: 'success', data: orders });
+      } catch (error) {
+        console.error("Error fetching orders:", error);
+        res.status(500).json({ status: 'error', message: 'Failed to fetch orders' });
+      }
 });
 
 
