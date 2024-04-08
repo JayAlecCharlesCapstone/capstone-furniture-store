@@ -111,20 +111,24 @@ app.post('/api/v1/admin/login', async (req, res) => {
         const { username, password } = req.body;
 
         const adminUser = await db.query('SELECT * FROM admin_users WHERE username = $1', [username]);
+
         if (adminUser.rows.length === 0) {
             return res.status(401).json({ message: 'Invalid username or password' });
         }
 
-        const isPasswordValid = await bcrypt.compare(password, adminUser.rows[0].password);
-        if (!isPasswordValid) {
+        const hashedPassword = adminUser.rows[0].password_hash;
+
+        const isPasswordValid = await bcrypt.compare(password, hashedPassword);
+
+        if (isPasswordValid) {
+            const token = generateAdminToken(adminUser.rows[0]);
+            return res.status(200).json({ token });
+        } else {
             return res.status(401).json({ message: 'Invalid username or password' });
         }
-
-        const token = generateAdminToken(adminUser.rows[0]);
-        res.status(200).json({ token });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: 'Error logging in as admin' });
+        return res.status(500).json({ message: 'Error logging in as admin' });
     }
 });
 app.get("/api/v1/protected/admintoken", verifyToken, isAdmin, async (req, res) => {
