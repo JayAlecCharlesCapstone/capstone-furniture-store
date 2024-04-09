@@ -1,6 +1,6 @@
 import React from 'react'
 
-export const productdetails = () => {
+export const Productdetails = () => {
   return (
     <div>productdetails</div>
   )
