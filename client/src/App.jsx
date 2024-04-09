@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react'
 import { Routes, Route } from 'react-router-dom';
-import account from './routes/account';
-import home from './routes/home';
-import login from './routes/login';
-import navbar from './routes/navbar';
-import productdetails from './routes/productdetails';
-import register from './routes/register';
-import updateproduct from './routes/updateproduct';
+import Account from './routes/Account';
+import Home from './routes/Home';
+import Login from './routes/Login';
+import Navbar from './routes/Navbar';
+import Productdetails from './routes/ProductDetails';
+import Register from './routes/Register';
+import Updateproduct from './routes/UpdateProduct';
 
 
 function App() {
