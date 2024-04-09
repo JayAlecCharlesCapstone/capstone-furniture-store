@@ -1,17 +1,18 @@
 import React, { useState, useEffect } from 'react'
 import { Routes, Route } from 'react-router-dom';
-import account from './routes/account';
-import home from './routes/home';
-import login from './routes/login';
-import navbar from './routes/navbar';
-import productdetails from './routes/productdetails';
-import register from './routes/register';
-import updateproduct from './routes/updateproduct';
+import Account from './routes/Account';
+import Home from './routes/Home';
+import Login from './routes/Login';
+import Navbar from './routes/Navbar';
+import Productdetails from './routes/Productdetails';
+import Register from './routes/Register';
+import Updateproduct from './routes/Updateproduct';
 
 
 function App() {
     const [token, setToken] = useState(null);
     const [customer, setCustomer] = useState(null);
+    const [newCart, setNewCart] = useState(null);
   
 
     const fetchCustomerData = async (token) => {
@@ -20,7 +21,7 @@ function App() {
                 const response = await fetch("http://localhost:3000/api/v1/customer", {
                     headers: {
                         'Content-type': 'application/json',
-                        'authorization': `Bearer${token}`
+                        'authorization': `Bearer ${token}`
                     }
                 });
                 if (!response.ok) {
@@ -30,7 +31,7 @@ function App() {
                 console.log(token)
                 setCustomer(result);
             }
-        } catch (err) {
+        } catch (error) {
             console.error(error);
         }
     };
@@ -54,13 +55,13 @@ function App() {
 
     return (
         <>
-            <Navigations token={token} logOut={logOut} />
+            <Navbar token={token} logOut={logOut} />
             <Routes>
-                <Route path="/account" element={<Account token={token} newCart={newCart} customer={customer} />} />
+                <Route path="/Account" element={<Account token={token} newCart={newCart} customer={customer} />} />
                 {/* <Route path="/home" element={ } /> */}
-                <Route path="/login" element={<Login setToken={setToken} />} />
-                <Route path="/register" element={<Register />} />
-                <Route path="/productdetails" element={< Home />} />
+                <Route path="/Login" element={<Login setToken={setToken} />} />
+                <Route path="/Register" element={<Register />} />
+                <Route path="/Productdetails" element={< Home />} />
             </Routes>
         </>
     )
