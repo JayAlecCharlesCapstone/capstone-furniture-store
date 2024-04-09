@@ -10,7 +10,7 @@ export default function Register() {
     event.preventDefault();
     try {
       const response = await fetch(
-        "", {
+        "http://localhost:3000/api/v1/customer/register", {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -25,7 +25,7 @@ export default function Register() {
       if (!response.ok) {
         throw new Error('Failed to register');
       }
-      setFullname("");
+      setFullName("");
       setPhone("");
       setEmail("");
       setPassword("");
