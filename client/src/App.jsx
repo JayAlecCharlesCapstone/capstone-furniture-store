@@ -4,9 +4,9 @@ import Account from './routes/Account';
 import Home from './routes/Home';
 import Login from './routes/Login';
 import Navbar from './routes/Navbar';
-import Productdetails from './routes/Productdetails';
+import Productdetails from './routes/ProductDetails';
 import Register from './routes/Register';
-import Updateproduct from './routes/Updateproduct';
+import Updateproduct from './routes/UpdateProduct';
 
 
 function App() {
