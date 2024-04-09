@@ -439,7 +439,6 @@ app.delete("/api/v1/customer/:id", async (req, res) => {
 
 // Get all cart items with product details
 app.get("/api/v1/cart", async (req, res) => {
-    console.log(req.user)
     try {
         if (!req.user || !req.user.id) {
             return res.status(401).json({ message: 'Unauthorized' });
@@ -536,31 +535,113 @@ app.post("/api/v1/cart", async (req, res) => {
         });
     }
 });
+
+app.delete("/api/v1/cart/:id", async (req, res) => {
+    try {
+        const result = await db.query("DELETE FROM cart WHERE cart_id = $1",
+            [
+                req.params.id
+            ]);
+        res.status(204).json({
+            status: "success",
+        });
+    } catch (error) {
+        console.error(error);
+    }
+
+});
         
 // ROUTES - Orders
 
-//Get customer orders
-app.get("/api/v1/orders",verifyToken, async (req, res) => {
+// Create a order
+app.post("/api/v1/orders",verifyToken, async (req, res) => {
     try {
-      const customer_id = req.user.customer_id; 
-      const orders = await db.getAllFinalizedOrders(customer_id); 
-      res.json({ status: 'success', data: orders });
-    } catch (error) {
-      console.error("Error fetching orders:", error);
-      res.status(500).json({ status: 'error', message: 'Failed to fetch orders' });
-    }
-  });
+        const { customer_id, shipping_address_id } = req.body;
 
-//Create orders
-app.post("/api/v1/orders", async (req, res) => {
+        const cartItemsQuery = `
+            SELECT ci.*, p.price
+            FROM cart ci
+            JOIN products p ON ci.product_id = p.product_id
+            WHERE ci.customer_id = $1;
+        `;
+        const cartItemsResult = await db.query(cartItemsQuery, [customer_id]);
+        const cartItems = cartItemsResult.rows;
+
+        if (cartItems.length === 0) {
+            return res.status(400).json({ message: 'Cart is empty' });
+        }
+
+        await db.query('BEGIN');
+
+        const orderQuery = `
+            INSERT INTO orders (customer_id, shipping_address_id)
+            VALUES ($1, $2)
+            RETURNING order_id;
+        `;
+        const orderValues = [customer_id, shipping_address_id];
+        const orderResult = await db.query(orderQuery, orderValues);
+        const orderId = orderResult.rows[0].order_id;
+
+        const orderItemQueries = cartItems.map(item => {
+            return db.query(`
+                INSERT INTO order_items (order_id, product_id, quantity, price_per_unit)
+                VALUES ($1, $2, $3, $4);
+            `, [orderId, item.product_id, item.quantity, item.price]);
+        });
+
+        await Promise.all(orderItemQueries);
+
+        const clearCartQuery = `
+            DELETE FROM cart
+            WHERE customer_id = $1;
+        `;
+        await db.query(clearCartQuery, [customer_id]);
+
+        await db.query('COMMIT');
+
+        res.status(201).json({
+            status: "success",
+            message: "Order placed successfully",
+            orderId: orderId
+        });
+    } catch (error) {
+        await db.query('ROLLBACK');
+        console.error(error);
+        res.status(500).json({
+            status: "error",
+            message: "An error occurred while placing the order."
+        });
+    }
+});
+
+
+//Get specific order
+app.get("/api/v1/orders/items/:orderId",verifyToken, async (req, res) => {
     try {
-        const customer_id = req.user.customer_id;
-        const orders = await db.getAllFinalizedOrders(customer_id);
-        res.json({ status: 'success', data: orders });
-      } catch (error) {
-        console.error("Error fetching orders:", error);
-        res.status(500).json({ status: 'error', message: 'Failed to fetch orders' });
-      }
+        const orderId = req.params.orderId;
+
+        const orderItemsQuery = `
+            SELECT oi.order_item_id, oi.product_id, p.name AS product_name, oi.quantity, oi.price_per_unit
+            FROM order_items oi
+            INNER JOIN products p ON oi.product_id = p.product_id
+            WHERE oi.order_id = $1;
+        `;
+        const orderItemsResult = await db.query(orderItemsQuery, [orderId]);
+        const orderedItems = orderItemsResult.rows;
+
+        res.status(200).json({
+            status: "success",
+            data: {
+                orderedItems: orderedItems
+            }
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            status: "error",
+            message: "An error occurred while fetching ordered items."
+        });
+    }
 });
 
 
