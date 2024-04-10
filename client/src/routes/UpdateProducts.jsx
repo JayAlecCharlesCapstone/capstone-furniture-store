@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 
 import { useParams, useNavigate } from "react-router-dom";
 
-export default function UpdateProduct({ token }) {
+export default function UpdateProducts({ token }) {
     const [product, setProduct] = useState(null);
     const [formData, setFormData] = useState({});
     const { productId } = useParams();

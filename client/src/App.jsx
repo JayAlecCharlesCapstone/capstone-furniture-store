@@ -4,9 +4,9 @@ import Account from './routes/Account';
 import Home from './routes/Home';
 import Login from './routes/Login';
 import Navbar from './routes/Navbar';
-import ProductDetails from './routes/efdsf';
+import ProductDetails from "./routes/ProductDetails";
 import Register from './routes/Register';
-import UpdateProduct from './routes/UpdateProduct';
+import UpdateProduct from './routes/UpdateProducts'
 
 
 
@@ -14,6 +14,8 @@ function App() {
     const [token, setToken] = useState(null);
     const [customer, setCustomer] = useState(null);
     const [newCart, setNewCart] = useState(null);
+
+    
   
 
     const fetchCustomerData = async (token) => {
