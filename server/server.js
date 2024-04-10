@@ -614,8 +614,25 @@ app.post("/api/v1/orders",verifyToken, async (req, res) => {
     }
 });
 
+//Get all orders for specific customer
+app.get("/api/v1/customers/:customerId/orders",verifyToken, async (req,res) => {
+    const {customerId} = req.params;
 
-//Get specific order
+    try {
+        const orders = await db.getOrdersByCustomerId(customerId);
+
+        res.json({
+            status: 'success',
+            data: {
+                orders
+            }
+        });
+    } catch (error) {
+        console.error(error)
+    }
+})
+
+//Get specific order for specific customer
 app.get("/api/v1/orders/items/:orderId",verifyToken, async (req, res) => {
     try {
         const orderId = req.params.orderId;
@@ -644,7 +661,21 @@ app.get("/api/v1/orders/items/:orderId",verifyToken, async (req, res) => {
     }
 });
 
+//Delete a order
+app.delete("/api/v1/orders/:id",verifyToken, async (req, res) => {
+    try {
+        const result = await db.query("DELETE FROM order_items WHERE order_item_id = $1",
+            [
+                req.params.id
+            ]);
+        res.status(204).json({
+            status: "success",
+        });
+    } catch (error) {
+        console.error(error);
+    }
 
+});
 
 
 
