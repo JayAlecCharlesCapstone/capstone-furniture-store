@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react'
 import { Routes, Route } from 'react-router-dom';
-import Account from './routes/Account';
-import Home from './routes/Home';
-import Login from './routes/Login';
-import Navbar from './routes/Navbar';
-import Productdetails from './routes/ProductDetails';
-import Register from './routes/Register';
-import Updateproduct from './routes/UpdateProduct';
+
+
+import account from './routes/account';
+import home from './routes/home';
+import login from './routes/login';
+import navbar from './routes/navbar';
+import productdetails from './routes/productdetails';
+import register from './routes/register';
+import updateproduct from './routes/updateproduct';
+
 
 
 function App() {
@@ -58,11 +61,9 @@ function App() {
             <Navbar token={token} logOut={logOut} />
             <Routes>
                 <Route path="/Account" element={<Account token={token} newCart={newCart} customer={customer} />} />
-<<<<<<< Updated upstream
-                {/* <Route path="/home" element={ } /> */}
-=======
+
                 <Route path="/home" element={<Home/> } />
->>>>>>> Stashed changes
+
                 <Route path="/Login" element={<Login setToken={setToken} />} />
                 <Route path="/Register" element={<Register />} />
                 <Route path="/Productdetails" element={< Home />} />
@@ -73,8 +74,7 @@ function App() {
 
 
 
-<<<<<<< Updated upstream
 export default App;
-=======
+
 export default App;
->>>>>>> Stashed changes
+

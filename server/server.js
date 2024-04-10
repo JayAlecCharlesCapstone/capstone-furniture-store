@@ -11,25 +11,59 @@ const jwt = require('jsonwebtoken')
 function generateToken(user) {
     return jwt.sign({ id: user.customer_id, email: user.email }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
+};
+function generateAdminToken(adminUser) {
+    return jwt.sign(
+        { id: adminUser.admin_id, username: adminUser.username, role: 'admin' },
+        process.env.JWT_SECRET,
+        { expiresIn: '1h' }
+    );
 }
+
 
 //middleware
 app.use(morgan("dev"));
 app.use(express.json());
+
 function verifyToken(req, res, next) {
-    const token = req.headers['authorization'];
+    const authHeader = req.headers['authorization'];
+
+    if (!authHeader) {
+        return res.status(401).json({ message: 'No token provided' });
+    }
+
+    const token = authHeader.split(' ')[1]; 
+
     if (!token) {
         return res.status(401).json({ message: 'No token provided' });
     }
-    
+
     jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
         if (err) {
+            console.error('Token Verification Error:', err);
             return res.status(403).json({ message: 'Failed to authenticate token' });
         }
-        req.user = decoded;
+        req.user = decoded; 
+        console.log('Decoded User:', req.user); 
         next(); 
     });
+};
+
+
+function isAdmin(req, res, next) {
+    if (req.user && req.user.role === 'admin') {
+        next(); 
+    } else {
+        res.status(403).json({ message: 'Access forbidden: Admin role required' });
+    }
 }
+
+
+app.use('/api/v1/cart', verifyToken); 
+app.use('/api/v1/admin/users', verifyToken)
+app.use('/api/v1/admin/orders', verifyToken)
+
+
 
 async function startServer() {
     try {
@@ -42,6 +76,84 @@ async function startServer() {
         process.exit(1); 
     }
 }
+
+
+
+//ROUTES - ADMIN//
+
+//Create Admin User
+app.post('/api/v1/admin/register', async(req,res) => {
+    try {
+        const {username, password} = req.body;
+
+        const saltRounds = 10;
+        const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+        const result = await db.query(
+            'INSERT INTO admin_users (username, password) VALUES ($1, $2) RETURNING *',
+            [username, hashedPassword]
+        );
+
+        res.status(201).json({
+            status: 'success',
+            data: {
+                adminUser: result.rows[0]
+            }
+        });
+    } catch (error) {
+        console.error(error)
+    }
+});
+
+//Login as Admin User
+app.post('/api/v1/admin/login', async (req, res) => {
+    try {
+        const { username, password } = req.body;
+
+        const adminUser = await db.query('SELECT * FROM admin_users WHERE username = $1', [username]);
+
+        if (adminUser.rows.length === 0) {
+            return res.status(401).json({ message: 'Invalid username or password' });
+        }
+
+        const hashedPassword = adminUser.rows[0].password_hash;
+
+        const isPasswordValid = await bcrypt.compare(password, hashedPassword);
+
+        if (isPasswordValid) {
+            const token = generateAdminToken(adminUser.rows[0]);
+            return res.status(200).json({ token });
+        } else {
+            return res.status(401).json({ message: 'Invalid username or password' });
+        }
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: 'Error logging in as admin' });
+    }
+});
+app.get("/api/v1/protected/admintoken", verifyToken, isAdmin, async (req, res) => {
+    res.status(200).json({ message: 'Access granted: Admin token endpoint' });
+});
+
+
+
+//Get all admin users
+app.get('/api/v1/admin/users', isAdmin, async (req, res) => {
+    try {
+        const result = await db.query('SELECT * FROM admin_users');
+        res.json({
+            status: 'success',
+            results: result.rows.length,
+            data: {
+                adminUsers: result.rows
+            }
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error fetching admin users' });
+    }
+});
+
 
 
 
@@ -305,7 +417,6 @@ app.get("/api/v1/protected/token", verifyToken, async (req,res) => {
     res.status(200).json({message: 'Access granted'});
 })
 
-
 //Delete a customer
 
 app.delete("/api/v1/customer/:id", async (req, res) => {
@@ -324,25 +435,58 @@ app.delete("/api/v1/customer/:id", async (req, res) => {
 });
 
 
-//Routes - Orders/Cart
+//Routes - Cart
 
-//Get all cart items 
+// Get all cart items with product details
 app.get("/api/v1/cart", async (req, res) => {
     try {
-        const result = await db.query("SELECT * FROM cart");
+        if (!req.user || !req.user.id) {
+            return res.status(401).json({ message: 'Unauthorized' });
+        }
+
+        const customerId = req.user.id; 
+        const cartItems = await db.query(`
+            SELECT 
+                c.cart_id,
+                c.customer_id,
+                c.product_id,
+                c.quantity,
+                p.name AS product_name,
+                p.price AS product_price
+            FROM 
+                cart c
+            INNER JOIN 
+                products p ON c.product_id = p.product_id
+            WHERE 
+                c.customer_id = $1
+        `, [customerId]); 
+
         res.json({
             status: "success",
-            results: result.rows.length,
+            results: cartItems.rows.length,
             data: {
-                customers: result.rows
+                cart: cartItems.rows.map(item => ({
+                    cart_id: item.cart_id,
+                    customer_id: item.customer_id,
+                    product_id: item.product_id,
+                    product_name: item.product_name,
+                    product_price: item.product_price,
+                    quantity: item.quantity
+                }))
             }
-        })
-
+        });
     } catch (error) {
-        console.error(error);
+        console.error('Error fetching cart items:', error);
+        res.status(500).json({
+            status: "error",
+            message: "An error occurred while fetching cart items."
+        });
     }
-
 });
+
+
+
+
 
 //Add item to cart
 app.post("/api/v1/cart", async (req, res) => {
@@ -391,11 +535,147 @@ app.post("/api/v1/cart", async (req, res) => {
         });
     }
 });
+
+app.delete("/api/v1/cart/:id", async (req, res) => {
+    try {
+        const result = await db.query("DELETE FROM cart WHERE cart_id = $1",
+            [
+                req.params.id
+            ]);
+        res.status(204).json({
+            status: "success",
+        });
+    } catch (error) {
+        console.error(error);
+    }
+
+});
         
+// ROUTES - Orders
 
+// Create a order
+app.post("/api/v1/orders",verifyToken, async (req, res) => {
+    try {
+        const { customer_id, shipping_address_id } = req.body;
 
+        const cartItemsQuery = `
+            SELECT ci.*, p.price
+            FROM cart ci
+            JOIN products p ON ci.product_id = p.product_id
+            WHERE ci.customer_id = $1;
+        `;
+        const cartItemsResult = await db.query(cartItemsQuery, [customer_id]);
+        const cartItems = cartItemsResult.rows;
 
+        if (cartItems.length === 0) {
+            return res.status(400).json({ message: 'Cart is empty' });
+        }
 
+        await db.query('BEGIN');
+
+        const orderQuery = `
+            INSERT INTO orders (customer_id, shipping_address_id)
+            VALUES ($1, $2)
+            RETURNING order_id;
+        `;
+        const orderValues = [customer_id, shipping_address_id];
+        const orderResult = await db.query(orderQuery, orderValues);
+        const orderId = orderResult.rows[0].order_id;
+
+        const orderItemQueries = cartItems.map(item => {
+            return db.query(`
+                INSERT INTO order_items (order_id, product_id, quantity, price_per_unit)
+                VALUES ($1, $2, $3, $4);
+            `, [orderId, item.product_id, item.quantity, item.price]);
+        });
+
+        await Promise.all(orderItemQueries);
+
+        const clearCartQuery = `
+            DELETE FROM cart
+            WHERE customer_id = $1;
+        `;
+        await db.query(clearCartQuery, [customer_id]);
+
+        await db.query('COMMIT');
+
+        res.status(201).json({
+            status: "success",
+            message: "Order placed successfully",
+            orderId: orderId
+        });
+    } catch (error) {
+        await db.query('ROLLBACK');
+        console.error(error);
+        res.status(500).json({
+            status: "error",
+            message: "An error occurred while placing the order."
+        });
+    }
+});
+
+//Get all orders for specific customer
+app.get("/api/v1/customers/:customerId/orders",verifyToken, async (req,res) => {
+    const {customerId} = req.params;
+
+    try {
+        const orders = await db.getOrdersByCustomerId(customerId);
+
+        res.json({
+            status: 'success',
+            data: {
+                orders
+            }
+        });
+    } catch (error) {
+        console.error(error)
+    }
+})
+
+//Get specific order for specific customer
+app.get("/api/v1/orders/items/:orderId",verifyToken, async (req, res) => {
+    try {
+        const orderId = req.params.orderId;
+
+        const orderItemsQuery = `
+            SELECT oi.order_item_id, oi.product_id, p.name AS product_name, oi.quantity, oi.price_per_unit
+            FROM order_items oi
+            INNER JOIN products p ON oi.product_id = p.product_id
+            WHERE oi.order_id = $1;
+        `;
+        const orderItemsResult = await db.query(orderItemsQuery, [orderId]);
+        const orderedItems = orderItemsResult.rows;
+
+        res.status(200).json({
+            status: "success",
+            data: {
+                orderedItems: orderedItems
+            }
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            status: "error",
+            message: "An error occurred while fetching ordered items."
+        });
+    }
+});
+
+//Delete a order
+app.delete("/api/v1/orders/:id",verifyToken, async (req, res) => {
+    try {
+        const result = await db.query("DELETE FROM order_items WHERE order_item_id = $1",
+            [
+                req.params.id
+            ]);
+        res.status(204).json({
+            status: "success",
+        });
+    } catch (error) {
+        console.error(error);
+    }
+
+});
 
 
 
