@@ -7,6 +7,7 @@ const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 
 
+
 // Generate token function
 function generateToken(user) {
     return jwt.sign({ id: user.customer_id, email: user.email }, process.env.JWT_SECRET, { expiresIn: '1h' });
@@ -24,6 +25,9 @@ function generateAdminToken(adminUser) {
 //middleware
 app.use(morgan("dev"));
 app.use(express.json());
+
+const cors = require('cors');
+app.use(cors());
 
 function verifyToken(req, res, next) {
     const authHeader = req.headers['authorization'];

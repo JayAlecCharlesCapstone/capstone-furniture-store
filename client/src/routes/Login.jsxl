@@ -15,11 +15,11 @@ export default function Login({ setToken }) {
 
 
       let response = await fetch(
-        "", {
+        "http://localhost:3000/api/v1/customer/login", {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          "Authorization": `Bearer${token} 
+          "Authorization": `Bearer${token}`
         },
         body: JSON.stringify({
           email: email,
