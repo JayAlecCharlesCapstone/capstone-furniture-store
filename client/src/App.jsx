@@ -4,9 +4,9 @@ import Account from './routes/Account';
 import Home from './routes/Home';
 import Login from './routes/Login';
 import Navbar from './routes/Navbar';
-import Productdetails from './routes/Productdetails';
+import Productdetails from './routes/ProductDetails';
 import Register from './routes/Register';
-import Updateproduct from './routes/Updateproduct';
+import Updateproduct from './routes/UpdateProduct';
 
 
 function App() {
@@ -58,7 +58,11 @@ function App() {
             <Navbar token={token} logOut={logOut} />
             <Routes>
                 <Route path="/Account" element={<Account token={token} newCart={newCart} customer={customer} />} />
+<<<<<<< Updated upstream
                 {/* <Route path="/home" element={ } /> */}
+=======
+                <Route path="/home" element={<Home/> } />
+>>>>>>> Stashed changes
                 <Route path="/Login" element={<Login setToken={setToken} />} />
                 <Route path="/Register" element={<Register />} />
                 <Route path="/Productdetails" element={< Home />} />
@@ -69,4 +73,8 @@ function App() {
 
 
 
+<<<<<<< Updated upstream
 export default App;
+=======
+export default App;
+>>>>>>> Stashed changes
