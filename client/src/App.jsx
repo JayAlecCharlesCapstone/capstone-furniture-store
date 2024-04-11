@@ -4,15 +4,18 @@ import Account from './routes/Account';
 import Home from './routes/Home';
 import Login from './routes/Login';
 import Navbar from './routes/Navbar';
-import Productdetails from './routes/ProductDetails';
+import ProductDetails from "./routes/ProductDetails";
 import Register from './routes/Register';
-import Updateproduct from './routes/UpdateProduct';
+import UpdateProduct from './routes/UpdateProducts'
+
 
 
 function App() {
     const [token, setToken] = useState(null);
     const [customer, setCustomer] = useState(null);
     const [newCart, setNewCart] = useState(null);
+
+    
   
 
     const fetchCustomerData = async (token) => {
@@ -58,7 +61,9 @@ function App() {
             <Navbar token={token} logOut={logOut} />
             <Routes>
                 <Route path="/Account" element={<Account token={token} newCart={newCart} customer={customer} />} />
-                {/* <Route path="/home" element={ } /> */}
+
+                <Route path="/Home" element={<Home/> } />
+
                 <Route path="/Login" element={<Login setToken={setToken} />} />
                 <Route path="/Register" element={<Register />} />
                 <Route path="/Productdetails" element={< Home />} />
@@ -70,3 +75,4 @@ function App() {
 
 
 export default App;
+
