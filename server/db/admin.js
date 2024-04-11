@@ -1,5 +1,6 @@
 
-
+const {client} = require("./client")
+const bcrypt = require("bcrypt")
 
 
 async function createAdminUser({
@@ -30,4 +31,10 @@ async function getAllAdminUsers() {
     } catch (error) {
         throw error;
     }
+}
+
+
+module.exports = {
+    createAdminUser,
+    getAllAdminUsers
 }

@@ -1,4 +1,5 @@
-
+const {client} = require("./client")
+const bcrypt = require("bcrypt")
 
 async function createCustomers({
     name,
@@ -95,4 +96,11 @@ async function getCustomersById(customerId) {
     } catch (error) {
         throw error;
     }
+}
+
+module.exports = {
+    createCustomers,
+    updateCustomers,
+    getAllCustomers,
+    getCustomersById
 }

@@ -1,4 +1,5 @@
-
+const {client} = require("./client")
+const bcrypt = require("bcrypt")
 
 async function createProducts({
     name,
@@ -51,3 +52,9 @@ async function updateProduct(productId, fields = {}) {
         throw error;
     }
 };
+
+module.exports = {
+    updateProduct,
+    getAllProducts,
+    createProducts
+}

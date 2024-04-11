@@ -1,6 +1,5 @@
 require("dotenv").config();
 const express = require("express");
-const db = require("./db")
 const morgan = require("morgan");
 const app = express();
 const bcrypt = require('bcrypt')
@@ -8,6 +7,8 @@ const jwt = require('jsonwebtoken')
 const cors = require('cors');
 
 
+const {client} = require("./db/client")
+client.connect();
 
 // Generate token function
 function generateToken(user) {
@@ -69,18 +70,6 @@ app.use('/api/v1/admin/orders', verifyToken)
 
 
 
-async function startServer() {
-    try {
-        await db.connectToDatabase();
-        app.listen(process.env.port, () => {
-            console.log(`Server is up and listening on port ${process.env.port}`);
-        });
-    } catch (error) {
-        console.error("Error starting server:", error.message);
-        process.exit(1); 
-    }
-}
-
 
 
 //ROUTES - ADMIN//
@@ -93,7 +82,7 @@ app.post('/api/v1/admin/register', async(req,res) => {
         const saltRounds = 10;
         const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-        const result = await db.query(
+        const result = await client.query(
             'INSERT INTO admin_users (username, password) VALUES ($1, $2) RETURNING *',
             [username, hashedPassword]
         );
@@ -114,7 +103,7 @@ app.post('/api/v1/admin/login', async (req, res) => {
     try {
         const { username, password } = req.body;
 
-        const adminUser = await db.query('SELECT * FROM admin_users WHERE username = $1', [username]);
+        const adminUser = await client.query('SELECT * FROM admin_users WHERE username = $1', [username]);
 
         if (adminUser.rows.length === 0) {
             return res.status(401).json({ message: 'Invalid username or password' });
@@ -144,7 +133,7 @@ app.get("/api/v1/protected/admintoken", verifyToken, isAdmin, async (req, res) =
 //Get all admin users
 app.get('/api/v1/admin/users', isAdmin, async (req, res) => {
     try {
-        const result = await db.query('SELECT * FROM admin_users');
+        const result = await client.query('SELECT * FROM admin_users');
         res.json({
             status: 'success',
             results: result.rows.length,
@@ -166,7 +155,7 @@ app.get('/api/v1/admin/users', isAdmin, async (req, res) => {
 // Get all products
 app.get("/api/v1/products", async (req, res) => {
     try {
-        const result = await db.query("SELECT * FROM products");
+        const result = await client.query("SELECT * FROM products");
         res.json({
             status: "success",
             results: result.rows.length,
@@ -185,7 +174,7 @@ app.get("/api/v1/products", async (req, res) => {
 app.get("/api/v1/products/:id", async (req, res) => {
     try {
         const paramsId = req.params.id;
-        const result = await db.query('SELECT * FROM products WHERE product_id = $1',
+        const result = await client.query('SELECT * FROM products WHERE product_id = $1',
             [
                 paramsId
             ]);
@@ -203,7 +192,7 @@ app.get("/api/v1/products/:id", async (req, res) => {
 //Create a product
 app.post("/api/v1/products", async (req, res) => {
     try {
-        const result = await db.query("INSERT INTO products (name,description,price,stock_quantity) VALUES ($1, $2, $3, $4) RETURNING *",
+        const result = await client.query("INSERT INTO products (name,description,price,stock_quantity) VALUES ($1, $2, $3, $4) RETURNING *",
             [
                 req.body.name,
                 req.body.description,
@@ -224,7 +213,7 @@ app.post("/api/v1/products", async (req, res) => {
 //Update a product
 app.put("/api/v1/products/:id", async (req, res) => {
     try {
-        const result = await db.query("UPDATE products SET name = $1, description = $2, price = $3, stock_quantity = $4 WHERE product_id = $5 RETURNING *",
+        const result = await client.query("UPDATE products SET name = $1, description = $2, price = $3, stock_quantity = $4 WHERE product_id = $5 RETURNING *",
             [
                 req.body.name,
                 req.body.description,
@@ -247,7 +236,7 @@ app.put("/api/v1/products/:id", async (req, res) => {
 //Delete a product
 app.delete("/api/v1/products/:id", async (req, res) => {
     try {
-        const result = await db.query("DELETE FROM products WHERE product_id = $1",
+        const result = await client.query("DELETE FROM products WHERE product_id = $1",
             [
                 req.params.id
             ]);
@@ -268,7 +257,7 @@ app.delete("/api/v1/products/:id", async (req, res) => {
 //Get all customers
 app.get("/api/v1/customer", async (req, res) => {
     try {
-        const result = await db.query("SELECT * FROM customers");
+        const result = await client.query("SELECT * FROM customers");
         res.json({
             status: "success",
             results: result.rows.length,
@@ -286,7 +275,7 @@ app.get("/api/v1/customer", async (req, res) => {
 //Get all customers address
 app.get("/api/v1/customer/address", async (req, res) => {
     try {
-        const result = await db.query("SELECT * FROM addresses");
+        const result = await client.query("SELECT * FROM addresses");
         res.json({
             status: "success",
             results: result.rows.length,
@@ -312,22 +301,22 @@ app.post("/api/v1/customer/register", async (req, res) => {
         const salt = await bcrypt.genSalt(saltRounds);
         const hashedPassword = await bcrypt.hash(password, salt);
 
-        await db.query('BEGIN');
+        await client.query('BEGIN');
 
         
-        const addressResult = await db.query(
+        const addressResult = await client.query(
             'INSERT INTO Addresses (street_address, city, state, country, postal_code) VALUES ($1, $2, $3, $4, $5) RETURNING address_id',
             [street_address, city, state, country, postal_code]
         );
         const addressId = addressResult.rows[0].address_id;
 
        
-        const customerResult = await db.query(
+        const customerResult = await client.query(
             'INSERT INTO Customers (name, email, phone, username, password_hash, password_salt, address_id) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
             [name, email, phone, username, hashedPassword, salt, addressId]
         );
 
-        await db.query('COMMIT');
+        await client.query('COMMIT');
 
         res.status(201).json({
             status: "success",
@@ -336,7 +325,7 @@ app.post("/api/v1/customer/register", async (req, res) => {
             }
         });
     } catch (error) {
-        await db.query('ROLLBACK');
+        await client.query('ROLLBACK');
         console.error(error);
         res.status(500).json({
             status: "error",
@@ -355,20 +344,20 @@ app.put("/api/v1/customer/register/:id", async (req, res) => {
     try {
         const { name, email, phone, street_address, city, state, country, postal_code } = req.body;
 
-        await db.query('BEGIN');
+        await client.query('BEGIN');
 
-        const customerResult = await db.query(
+        const customerResult = await client.query(
             'UPDATE Customers SET name = $1, email = $2, phone = $3 WHERE customer_id = $4 RETURNING *',
             [name, email, phone, req.params.id]
         );
 
-        const addressResult = await db.query(
+        const addressResult = await client.query(
             'UPDATE Addresses SET street_address = $1, city = $2, state = $3, country = $4, postal_code = $5 WHERE address_id = $6',
             [street_address, city, state, country, postal_code, customerResult.rows[0].address_id]
         );
 
 
-        await db.query('COMMIT');
+        await client.query('COMMIT');
 
         res.status(200).json({
             status: "success",
@@ -377,7 +366,7 @@ app.put("/api/v1/customer/register/:id", async (req, res) => {
             }
         });
     } catch (error) {
-        await db.query('ROLLBACK');
+        await client.query('ROLLBACK');
         console.error(error);
         res.status(500).json({
             status: "error",
@@ -393,7 +382,7 @@ app.post("/api/v1/customer/login", async (req, res) => {
         const { email, password } = req.body;
 
         
-        const user = await db.query('SELECT * FROM Customers WHERE email = $1', [email]);
+        const user = await client.query('SELECT * FROM Customers WHERE email = $1', [email]);
         
         if (user.rows.length === 0) {
             return res.status(404).json({ message: 'User not found' });
@@ -425,7 +414,7 @@ app.get("/api/v1/protected/token", verifyToken, async (req,res) => {
 
 app.delete("/api/v1/customer/:id", async (req, res) => {
     try {
-        const result = await db.query("DELETE FROM customers WHERE customer_id = $1",
+        const result = await client.query("DELETE FROM customers WHERE customer_id = $1",
             [
                 req.params.id
             ]);
@@ -449,7 +438,7 @@ app.get("/api/v1/cart", async (req, res) => {
         }
 
         const customerId = req.user.id; 
-        const cartItems = await db.query(`
+        const cartItems = await client.query(`
             SELECT 
                 c.cart_id,
                 c.customer_id,
@@ -504,7 +493,7 @@ app.post("/api/v1/cart", async (req, res) => {
             });
         }
         
-        const customer = await db.query('SELECT * FROM Customers WHERE customer_id = $1', [customer_id]);
+        const customer = await client.query('SELECT * FROM Customers WHERE customer_id = $1', [customer_id]);
         if (customer.rows.length === 0) {
             return res.status(404).json({
                 status: "error",
@@ -513,7 +502,7 @@ app.post("/api/v1/cart", async (req, res) => {
         }
 
         
-        const product = await db.query('SELECT * FROM Products WHERE product_id = $1', [product_id]);
+        const product = await client.query('SELECT * FROM Products WHERE product_id = $1', [product_id]);
         if (product.rows.length === 0) {
             return res.status(404).json({
                 status: "error",
@@ -522,7 +511,7 @@ app.post("/api/v1/cart", async (req, res) => {
         }
 
         
-        await db.query(
+        await client.query(
             'INSERT INTO Cart (customer_id, product_id, quantity) VALUES ($1, $2, $3)',
             [customer_id, product_id, quantity]
         );
@@ -542,7 +531,7 @@ app.post("/api/v1/cart", async (req, res) => {
 
 app.delete("/api/v1/cart/:id", async (req, res) => {
     try {
-        const result = await db.query("DELETE FROM cart WHERE cart_id = $1",
+        const result = await client.query("DELETE FROM cart WHERE cart_id = $1",
             [
                 req.params.id
             ]);
@@ -568,14 +557,14 @@ app.post("/api/v1/orders",verifyToken, async (req, res) => {
             JOIN products p ON ci.product_id = p.product_id
             WHERE ci.customer_id = $1;
         `;
-        const cartItemsResult = await db.query(cartItemsQuery, [customer_id]);
+        const cartItemsResult = await client.query(cartItemsQuery, [customer_id]);
         const cartItems = cartItemsResult.rows;
 
         if (cartItems.length === 0) {
             return res.status(400).json({ message: 'Cart is empty' });
         }
 
-        await db.query('BEGIN');
+        await client.query('BEGIN');
 
         const orderQuery = `
             INSERT INTO orders (customer_id, shipping_address_id)
@@ -583,11 +572,11 @@ app.post("/api/v1/orders",verifyToken, async (req, res) => {
             RETURNING order_id;
         `;
         const orderValues = [customer_id, shipping_address_id];
-        const orderResult = await db.query(orderQuery, orderValues);
+        const orderResult = await client.query(orderQuery, orderValues);
         const orderId = orderResult.rows[0].order_id;
 
         const orderItemQueries = cartItems.map(item => {
-            return db.query(`
+            return client.query(`
                 INSERT INTO order_items (order_id, product_id, quantity, price_per_unit)
                 VALUES ($1, $2, $3, $4);
             `, [orderId, item.product_id, item.quantity, item.price]);
@@ -599,9 +588,9 @@ app.post("/api/v1/orders",verifyToken, async (req, res) => {
             DELETE FROM cart
             WHERE customer_id = $1;
         `;
-        await db.query(clearCartQuery, [customer_id]);
+        await client.query(clearCartQuery, [customer_id]);
 
-        await db.query('COMMIT');
+        await client.query('COMMIT');
 
         res.status(201).json({
             status: "success",
@@ -609,7 +598,7 @@ app.post("/api/v1/orders",verifyToken, async (req, res) => {
             orderId: orderId
         });
     } catch (error) {
-        await db.query('ROLLBACK');
+        await client.query('ROLLBACK');
         console.error(error);
         res.status(500).json({
             status: "error",
@@ -623,7 +612,7 @@ app.get("/api/v1/customers/:customerId/orders",verifyToken, async (req,res) => {
     const {customerId} = req.params;
 
     try {
-        const orders = await db.getOrdersByCustomerId(customerId);
+        const orders = await client.getOrdersByCustomerId(customerId);
 
         res.json({
             status: 'success',
@@ -647,7 +636,7 @@ app.get("/api/v1/orders/items/:orderId",verifyToken, async (req, res) => {
             INNER JOIN products p ON oi.product_id = p.product_id
             WHERE oi.order_id = $1;
         `;
-        const orderItemsResult = await db.query(orderItemsQuery, [orderId]);
+        const orderItemsResult = await client.query(orderItemsQuery, [orderId]);
         const orderedItems = orderItemsResult.rows;
 
         res.status(200).json({
@@ -668,7 +657,7 @@ app.get("/api/v1/orders/items/:orderId",verifyToken, async (req, res) => {
 //Delete a order
 app.delete("/api/v1/orders/:id",verifyToken, async (req, res) => {
     try {
-        const result = await db.query("DELETE FROM order_items WHERE order_item_id = $1",
+        const result = await client.query("DELETE FROM order_items WHERE order_item_id = $1",
             [
                 req.params.id
             ]);
@@ -685,4 +674,6 @@ app.delete("/api/v1/orders/:id",verifyToken, async (req, res) => {
 
 
 
-startServer();
+app.listen(3000, () => {
+    console.log("Server is up and running on port 3000")
+});

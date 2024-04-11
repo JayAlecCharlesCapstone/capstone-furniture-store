@@ -1,5 +1,10 @@
+const {client} = require("./client")
 const bcrypt = require('bcrypt')
-const { client, createAdminUser, getAllAdminUsers, createCustomers, createProducts, getAllCustomers, getAllProducts } = require("./db/index.js");
+const {createAdminUser, getAllAdminUsers} = require('./admin')
+const {createCustomers,updateCustomers,getAllCustomers,getCustomersById} = require('./customers')
+const {getOrdersByCustomerId} = require('./orders')
+const {createProducts,getAllProducts,updateProduct} = require('./product')
+
 
 
 async function dropTables() {
