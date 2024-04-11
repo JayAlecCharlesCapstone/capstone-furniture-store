@@ -25,6 +25,8 @@ function generateAdminToken(adminUser) {
 //middleware
 app.use(morgan("dev"));
 app.use(express.json());
+const cors = require('cors');
+app.use(cors());
 
 const cors = require('cors');
 app.use(cors());
