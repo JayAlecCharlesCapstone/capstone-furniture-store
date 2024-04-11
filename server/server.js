@@ -5,6 +5,7 @@ const morgan = require("morgan");
 const app = express();
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
+const cors = require('cors');
 
 
 
@@ -25,11 +26,8 @@ function generateAdminToken(adminUser) {
 //middleware
 app.use(morgan("dev"));
 app.use(express.json());
-const cors = require('cors');
 app.use(cors());
 
-const cors = require('cors');
-app.use(cors());
 
 function verifyToken(req, res, next) {
     const authHeader = req.headers['authorization'];
