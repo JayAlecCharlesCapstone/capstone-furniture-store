@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
-import { useParams, useHistory } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 
 export default function UpdateProduct({ token }) {
     const [product, setProduct] = useState(null);
     const [formData, setFormData] = useState({});
     const { productId } = useParams();
-    const history = useHistory();
+    const navigate = useNavigate();
 
     useEffect(() => {
       async function fetchProduct() {
@@ -42,7 +42,7 @@ export default function UpdateProduct({ token }) {
             body: JSON.stringify(formData)
         });
         if (response.ok) {
-            history.push(`/products/${productId}`);
+            navigate(`/products/${productId}`);
         } else {
             console.error("Failed to update product, please try again!");
         }

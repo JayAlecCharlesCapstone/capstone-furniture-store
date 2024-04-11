@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 
-export default function Login({ setToken }) {
+export default function Login({ setToken, token }) {
   const [error, setError] = useState("")
   const [password, setPassword] = useState("")
   const [email, setEmail] = useState("")
@@ -15,10 +15,11 @@ export default function Login({ setToken }) {
 
 
       let response = await fetch(
-        "", {
+        "http://localhost:3000/api/v1/customer/login", {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({
           email: email,
@@ -32,7 +33,7 @@ export default function Login({ setToken }) {
       setToken(result.token)
       localStorage.setItem("token", result.token)
       if (result.token) {
-        navigate("/home")
+        navigate("/Home")
       }
 
     } catch (error) {
