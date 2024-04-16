@@ -49,7 +49,7 @@ export default function Home({ token, setNewReservedItem }) {
                         <button>View Item</button>
                     </Link>
                     {token && (
-                        <button onClick={() => reserveProducts(prodcut.id)}>Reserve Item</button>
+                        <button onClick={() => reserveProduct(prodcut.id)}>Reserve Item</button>
                     )}
                 </div>
             ))}
