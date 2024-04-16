@@ -15,8 +15,8 @@ function App() {
     const [customer, setCustomer] = useState(null);
     const [newCart, setNewCart] = useState(null);
 
-    
-  
+
+
 
     const fetchCustomerData = async (token) => {
         try {
@@ -62,10 +62,12 @@ function App() {
             <Routes>
                 <Route path="/Account" element={<Account token={token} newCart={newCart} customer={customer} />} />
 
-                <Route path="/Home" element={<Home/> } />
+                <Route path="/Home" element={<Home />} />
 
                 <Route path="/Login" element={<Login setToken={setToken} />} />
+
                 <Route path="/Register" element={<Register />} />
+
                 <Route path="/Productdetails" element={< Home />} />
             </Routes>
         </>

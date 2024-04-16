@@ -5,7 +5,7 @@ const bcrypt = require("bcrypt")
 
 async function getOrdersByCustomerId(customerId) {
     try {
-        const { rows } = await pool.query(`
+        const { rows } = await client.query(`
             SELECT o.order_id, o.order_date, oi.order_item_id, oi.product_id, p.name AS product_name, oi.quantity, oi.price_per_unit
             FROM orders o
             JOIN order_items oi ON o.order_id = oi.order_id
