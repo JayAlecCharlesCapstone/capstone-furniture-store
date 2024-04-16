@@ -4,14 +4,18 @@ import Account from './routes/Account';
 import Home from './routes/Home';
 import Login from './routes/Login';
 import Navbar from './routes/Navbar';
-import Productdetails from './routes/Productdetails';
+import ProductDetails from "./routes/ProductDetails";
 import Register from './routes/Register';
-import Updateproduct from './routes/Updateproduct';
+import UpdateProduct from './routes/UpdateProducts'
+
 
 
 function App() {
     const [token, setToken] = useState(null);
     const [customer, setCustomer] = useState(null);
+    const [newCart, setNewCart] = useState(null);
+
+    
   
 
     const fetchCustomerData = async (token) => {
@@ -20,7 +24,7 @@ function App() {
                 const response = await fetch("http://localhost:3000/api/v1/customer", {
                     headers: {
                         'Content-type': 'application/json',
-                        'authorization': `Bearer${token}`
+                        'authorization': `Bearer ${token}`
                     }
                 });
                 if (!response.ok) {
@@ -30,7 +34,7 @@ function App() {
                 console.log(token)
                 setCustomer(result);
             }
-        } catch (err) {
+        } catch (error) {
             console.error(error);
         }
     };
@@ -54,13 +58,15 @@ function App() {
 
     return (
         <>
-            <Navigations token={token} logOut={logOut} />
+            <Navbar token={token} logOut={logOut} />
             <Routes>
-                <Route path="/account" element={<Account token={token} newCart={newCart} customer={customer} />} />
-                {/* <Route path="/home" element={ } /> */}
-                <Route path="/login" element={<Login setToken={setToken} />} />
-                <Route path="/register" element={<Register />} />
-                <Route path="/productdetails" element={< Home />} />
+                <Route path="/Account" element={<Account token={token} newCart={newCart} customer={customer} />} />
+
+                <Route path="/Home" element={<Home/> } />
+
+                <Route path="/Login" element={<Login setToken={setToken} />} />
+                <Route path="/Register" element={<Register />} />
+                <Route path="/Productdetails" element={< Home />} />
             </Routes>
         </>
     )
@@ -69,3 +75,4 @@ function App() {
 
 
 export default App;
+
