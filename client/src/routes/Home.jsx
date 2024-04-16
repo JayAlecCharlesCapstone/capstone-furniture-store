@@ -2,23 +2,23 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 export default function Home({ token, setNewReservedItem }) {
-    const [items, setItems] = useState(null);
+    const [products, setProducts] = useState(null);
 
     useEffect(() => {
-        async function getItems() {
+        async function getProducts() {
             try {
                 const response = await fetch("http://localhost:3000/api/v1/products");
                 const result = await response.json();
                 console.log(result);
-                setItems(result.items);
+                setProducts(result.data.products);
             } catch (error) {
                 console.error(error);
             }
         }
-        getItems();
+        getProducts();
     }, []);
 
-    async function reserveItem(id) {
+    async function reserveProduct(id) {
         try {
             const response = await fetch("http://localhost:3000/api/v1/products"+id, {
                 method: "PATCH",
@@ -39,19 +39,21 @@ export default function Home({ token, setNewReservedItem }) {
     }
 
     return (
+        <div id ="allProducts">
         <>
             {items && items.map(item => (
                 <div key={item.id}>
                     <p>{item.name}</p>
                     <p>${item.price}</p>
-                    <Link to={`/items/${item.id}`}>
+                    <Link to={`/items/${product.id}`}>
                         <button>View Item</button>
                     </Link>
                     {token && (
-                        <button onClick={() => reserveItem(item.id)}>Reserve Item</button>
+                        <button onClick={() => reserveProduct(prodcut.id)}>Reserve Item</button>
                     )}
                 </div>
             ))}
         </>
+        </div>
     );
 }

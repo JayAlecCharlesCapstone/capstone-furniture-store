@@ -5,15 +5,13 @@ import { useNavigate } from 'react-router-dom';
 export default function Login({ setToken, token }) {
   const [error, setError] = useState("")
   const [password, setPassword] = useState("")
-  const [email, setEmail] = useState("")
+  const [username, setUsername] = useState("")
 
   const navigate = useNavigate()
 
   async function handleSubmit(event) {
     event.preventDefault()
     try {
-
-
       let response = await fetch(
         "http://localhost:3000/api/v1/customer/login", {
         method: 'POST',
@@ -22,7 +20,7 @@ export default function Login({ setToken, token }) {
           'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({
-          email: email,
+          username: username,
           password: password
         })
       })
@@ -32,8 +30,12 @@ export default function Login({ setToken, token }) {
       }
       setToken(result.token)
       localStorage.setItem("token", result.token)
+      
       if (result.token) {
-        navigate("/Home")
+        if (result.isAdmin) {
+          navigate("/Admin");
+        }
+        navigate("/Home");
       }
 
     } catch (error) {
@@ -47,8 +49,8 @@ export default function Login({ setToken, token }) {
         {error}
       </div>
       <form id='loginForm' onSubmit={handleSubmit}>
-        <label>Email:</label>
-        <input value={email} onChange={(event) => setEmail(event.target.value)}></input>
+        <label>Username:</label>
+        <input value={username} onChange={(event) => setUsername(event.target.value)}></input>
         <br></br>
         <label>Password:</label>
         <input value={password} onChange={(event) => setPassword(event.target.value)}></input>

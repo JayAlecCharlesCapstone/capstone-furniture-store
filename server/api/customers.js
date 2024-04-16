@@ -141,9 +141,9 @@ router.put("/register/:id",verifyToken, async (req, res) => {
 // POST login as a customer
 router.post("/login", async (req, res) => {
     try {
-        const { email, password } = req.body;
+        const { username, password } = req.body;
         
-        const user = await client.query('SELECT * FROM customers WHERE email = $1', [email]);
+        const user = await client.query('SELECT * FROM customers WHERE username = $1', [username]);
         
         if (user.rows.length === 0) {
             return res.status(404).json({ message: 'User not found' });
@@ -152,7 +152,7 @@ router.post("/login", async (req, res) => {
         const isPasswordValid = await bcrypt.compare(password, user.rows[0].password_hash);
         
         if (!isPasswordValid) {
-            return res.status(401).json({ message: 'Invalid email or password' });
+            return res.status(401).json({ message: 'Invalid username or password' });
         }
         
         const token = generateToken(user.rows[0]);
