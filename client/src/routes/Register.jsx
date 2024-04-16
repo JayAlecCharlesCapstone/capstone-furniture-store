@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
 export default function Register() {
-  const [fullname, setFullName] = useState("");
+  const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -16,7 +16,7 @@ export default function Register() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          fullname: fullname,
+          name: name,
           phone: phone,
           email: email,
           password: password
@@ -25,12 +25,12 @@ export default function Register() {
       if (!response.ok) {
         throw new Error('Failed to register');
       }
-      setFullName("");
+      setName("");
       setPhone("");
       setEmail("");
       setPassword("");
     } catch (error) {
-      console.error(error);
+      console.error(error.message);
       
     }
   }
@@ -39,7 +39,7 @@ export default function Register() {
     <>
       <form id='registrationForm' onSubmit={handleSubmit}>
         <label>Full Name:</label>
-        <input type="text" value={fullname} onChange={(event) => setFullName(event.target.value)}  required />
+        <input type="text" value={name} onChange={(event) => setName(event.target.value)}  required />
         <br />
         <label>Phone Number:</label>
         <input type="text"value={phone} onChange={(event) => setPhone(event.target.value)} required/>
