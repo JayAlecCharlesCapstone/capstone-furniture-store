@@ -75,40 +75,31 @@ router.get("/address", async (req, res) => {
 // POST register a new customer
 router.post("/register", async (req, res) => {
     try {
-        const { name, email, phone, username, password, street_address, city, state, country, postal_code } = req.body;
+        const { name, email, phone, username, password } = req.body;
         
+        if (!name || !email || !username || !password) {
+            return res.status(400).json({ message: 'Missing required fields' });
+        }
+
         const saltRounds = 10;
-        const salt = await bcrypt.genSalt(saltRounds);
-        const hashedPassword = await bcrypt.hash(password, salt);
-        
-        await client.query('BEGIN');
-        
-        const addressResult = await client.query(
-            'INSERT INTO addresses (street_address, city, state, country, postal_code) VALUES ($1, $2, $3, $4, $5) RETURNING address_id',
-            [street_address, city, state, country, postal_code]
-        );
-        const addressId = addressResult.rows[0].address_id;
-        
-        const customerResult = await client.query(
-            'INSERT INTO customers (name, email, phone, username, password_hash, password_salt, address_id) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
-            [name, email, phone, username, hashedPassword, salt, addressId]
-        );
-        
-        await client.query('COMMIT');
-        
+        const passwordSalt = await bcrypt.genSalt(saltRounds);
+        const hashedPassword = await bcrypt.hash(password, passwordSalt);
+
+        const result = await client.query(`
+            INSERT INTO customers (name, email, phone, username, password_hash, password_salt)
+            VALUES ($1, $2, $3, $4, $5, $6)
+            RETURNING customer_id, name, email, phone, username;
+        `, [name, email, phone, username, hashedPassword, passwordSalt]);
+
+        const newCustomer = result.rows[0];
+
         res.status(201).json({
-            status: "success",
-            data: {
-                customer: customerResult.rows[0]
-            }
+            message: 'Customer registered successfully',
+            customer: newCustomer
         });
     } catch (error) {
-        await client.query('ROLLBACK');
-        console.error(error);
-        res.status(500).json({
-            status: "error",
-            message: "An error occurred while registering the customer."
-        });
+        console.error('Error registering customer:', error.message);
+        res.status(500).json({ message: 'Failed to register customer' });
     }
 });
 
