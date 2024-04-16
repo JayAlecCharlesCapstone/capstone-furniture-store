@@ -174,11 +174,11 @@ async function createInitialCustomers() {
         const saltRounds = 10;
 
         for (const customer of customers) {
-            const { password, ...customerHashedPassword } = customer;
+            const { password, ...customerData } = customer;
             const hashedPassword = await bcrypt.hash(password, saltRounds);
 
             await createCustomers({
-                ...customerHashedPassword,
+                ...customerData,
                 password_hash: hashedPassword,
                 password_salt: saltRounds
             });
