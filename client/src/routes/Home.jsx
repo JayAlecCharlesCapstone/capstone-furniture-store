@@ -11,6 +11,7 @@ export default function Home({ token, setNewReservedItem }) {
                 const result = await response.json();
                 console.log(result);
                 setProducts(result.data.products);
+                console.log(result.data.products)
             } catch (error) {
                 console.error(error);
             }
@@ -20,7 +21,7 @@ export default function Home({ token, setNewReservedItem }) {
 
     async function reserveProduct(id) {
         try {
-            const response = await fetch("http://localhost:3000/api/v1/products"+id, {
+            const response = await fetch(`http://localhost:3000/api/v1/products/${id}`, {
                 method: "PATCH",
                 headers: {
                     "Content-Type": "application/json",
@@ -42,15 +43,15 @@ export default function Home({ token, setNewReservedItem }) {
         <div id ="allProducts">
         <>
             {products && products.map(products => (
-                <div key={products.id}>
+                <div key={products.product_id} id={products.product_id}>
                     <p>{products.name}</p>
                     <p>${products.price}</p>
                     <p>{products.stock_quantity}</p>
-                    <Link to={`/ProductDetails/${products.id}`}>
+                    <Link to={`/ProductDetails/${products.product_id}`}>
                         <button>View Item</button>
                     </Link>
                     {token && (
-                        <button onClick={() => reserveProduct(products.id)}>Reserve Item</button>
+                        <button onClick={() => reserveProduct(products.product_id)}>Reserve Item</button>
                     )}
                 </div>
             ))}

@@ -4,26 +4,27 @@ import { useParams } from "react-router-dom";
 
 export default function ProductDetails({ token, setNewReservedproducts }) {
   const [products, setProducts] = useState(null);
-  const {productsId} = useParams();
+  const {productId} = useParams();
 
   useEffect(() => {
     async function getProductsDetails() {
         try {
-            const response = await fetch(`http://localhost:3000/api/v1/products/${productsId}`);
+            const response = await fetch(`http://localhost:3000/api/v1/products/${productId}`);
             const result = await response.json();
             console.log(result);
-            setProducts(result.data);
+            setProducts(result.data.product);
+            console.log(result.data.product)
         } catch (error) {
             console.error(error);
         }
     }
     getProductsDetails();
-}, [productsId]);
+}, [productId]);
 
 
 async function reserveProducts(id) {
   try {
-      const response = await fetch("http://localhost:3000/api/v1/products"+id, {
+      const response = await fetch(`http://localhost:3000/api/v1/products/${id}`, {
           method: "PATCH",
           headers: {
               "Content-Type": "application/json",
@@ -49,7 +50,7 @@ async function reserveProducts(id) {
                 <p>Description: {products.description}</p>
                 <p>Price: ${products.price}</p>
                 {token && (
-                    <button onClick={() => reserveProducts(products.id)}>Add products</button>
+                    <button onClick={() => reserveProducts(products.id)}>Add to cart</button>
                 )}
             </>
         ) : (
