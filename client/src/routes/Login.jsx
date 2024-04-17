@@ -1,55 +1,43 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-export default function Login({ setToken }) {
-  const [error, setError] = useState('');
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const navigate = useNavigate();
+
+export default function Login({ setToken, token }) {
+  const [error, setError] = useState("")
+  const [password, setPassword] = useState("")
+  const [username, setUsername] = useState("")
+
+  const navigate = useNavigate()
 
   async function handleSubmit(event) {
-    event.preventDefault();
+    event.preventDefault()
     try {
-      let response = await fetch('http://localhost:3000/api/v1/login/admin', {
+      let response = await fetch(
+        "http://localhost:3000/api/v1/customer/login", {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({
           username: username,
-          password: password,
-        }),
-      });
-
-      const adminResult = await response.json();
-      console.log(adminResult);
+          password: password
+        })
+      })
+      const result = await response.json();
       if (!response.ok) {
-        throw new Error(adminResult.message || 'Failed to login');
+        throw new Error(result.message || "Failed to login")
       }
-      if (adminResult.isAdmin) {
-        setToken(adminResult.token);
-        localStorage.setItem('token', adminResult.token);
-        navigate('/Admin');
-      } else {
-        response = await fetch('http://localhost:3000/api/v1/login/customer', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            username: username,
-            password: password,
-          }),
-        });
-
-        const customerResult = await response.json();
-        if (!response.ok) {
-          throw new Error(customerResult.message || 'Failed to login');
+      setToken(result.token)
+      localStorage.setItem("token", result.token)
+      
+      if (result.token) {
+        if (result.isAdmin) {
+          navigate("/Admin");
         }
-        setToken(customerResult.token);
-        localStorage.setItem('token', customerResult.token);
-        navigate('/Home');
+        navigate("/Home");
       }
+
     } catch (error) {
       setError(error.message);
     }
@@ -57,20 +45,18 @@ export default function Login({ setToken }) {
 
   return (
     <>
-      <div id="loginErr">{error}</div>
-      <form id="loginForm" onSubmit={handleSubmit}>
+      <div id='loginErr'>
+        {error}
+      </div>
+      <form id='loginForm' onSubmit={handleSubmit}>
         <label>Username:</label>
         <input value={username} onChange={(event) => setUsername(event.target.value)}></input>
         <br></br>
         <label>Password:</label>
-        <input
-          value={password}
-          onChange={(event) => setPassword(event.target.value)}
-          type="password"
-        ></input>
+        <input value={password} onChange={(event) => setPassword(event.target.value)}></input>
         <br></br>
-        <button type="submit">Submit</button>
+        <button>Submit</button>
       </form>
     </>
-  );
+  )
 }
