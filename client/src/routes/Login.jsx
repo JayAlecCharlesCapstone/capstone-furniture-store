@@ -64,7 +64,7 @@ export default function Login({ setToken, token }) {
       localStorage.setItem("token", result.token)
 
       if (result.token) {
-        navigate("/Admin")
+        navigate("/AdminHome")
       }
     } catch (error) {
       setError(error.message)

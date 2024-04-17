@@ -7,6 +7,7 @@ import Navbar from './routes/Navbar';
 import ProductDetails from "./routes/ProductDetails";
 import Register from './routes/Register';
 import UpdateProduct from './routes/UpdateProducts'
+import AdminHome from './routes/AdminHome'
 
 
 
@@ -63,6 +64,8 @@ function App() {
                 <Route path="/Account" element={<Account token={token} newCart={newCart} customer={customer} />} />
 
                 <Route path="/Home" element={<Home />} />
+
+                <Route path='/AdminHome' element={<AdminHome/>} />
 
                 <Route path="/Login" element={<Login setToken={setToken} />} />
 
