@@ -2,26 +2,26 @@
 import {useEffect, useState} from "react";
 import { useParams } from "react-router-dom";
 
-export default function ProductDetails({ token, setNewReservedItem }) {
-  const [item, setItem] = useState(null);
-  const {itemId} = useParams();
+export default function ProductDetails({ token, setNewReservedproducts }) {
+  const [products, setProducts] = useState(null);
+  const {productsId} = useParams();
 
   useEffect(() => {
-    async function getItemDetails() {
+    async function getProductsDetails() {
         try {
-            const response = await fetch(`http://localhost:3000/api/v1/products/${itemId}`);
+            const response = await fetch(`http://localhost:3000/api/v1/products/${productsId}`);
             const result = await response.json();
             console.log(result);
-            setItem(result);
+            setProducts(result.data);
         } catch (error) {
             console.error(error);
         }
     }
-    getItemDetails();
-}, [itemId]);
+    getProductsDetails();
+}, [productsId]);
 
 
-async function reserveItem(id) {
+async function reserveProducts(id) {
   try {
       const response = await fetch("http://localhost:3000/api/v1/products"+id, {
           method: "PATCH",
@@ -35,7 +35,7 @@ async function reserveItem(id) {
       });
       const result = await response.json();
       console.log(result);
-      setNewReservedItem(result);
+      setNewReservedproducts(result);
   } catch (error) {
       console.error(error);
   }
@@ -43,13 +43,13 @@ async function reserveItem(id) {
 
   return (
     <div>
-        {item ? (
+        {products ? (
             <>
-                <h2>{item.name}</h2>
-                <p>Description: {item.description}</p>
-                <p>Price: ${item.price}</p>
+                <h2>{products.name}</h2>
+                <p>Description: {products.description}</p>
+                <p>Price: ${products.price}</p>
                 {token && (
-                    <button onClick={() => reserveItem(item.id)}>Add Item</button>
+                    <button onClick={() => reserveProducts(products.id)}>Add products</button>
                 )}
             </>
         ) : (
