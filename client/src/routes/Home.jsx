@@ -41,15 +41,16 @@ export default function Home({ token, setNewReservedItem }) {
     return (
         <div id ="allProducts">
         <>
-            {items && items.map(item => (
-                <div key={item.id}>
-                    <p>{item.name}</p>
-                    <p>${item.price}</p>
-                    <Link to={`/items/${product.id}`}>
+            {products && products.map(products => (
+                <div key={products.id}>
+                    <p>{products.name}</p>
+                    <p>${products.price}</p>
+                    <p>{products.stock_quantity}</p>
+                    <Link to={`/ProductDetails/${products.id}`}>
                         <button>View Item</button>
                     </Link>
                     {token && (
-                        <button onClick={() => reserveProduct(prodcut.id)}>Reserve Item</button>
+                        <button onClick={() => reserveProduct(products.id)}>Reserve Item</button>
                     )}
                 </div>
             ))}

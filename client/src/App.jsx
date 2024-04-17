@@ -68,7 +68,7 @@ function App() {
 
                 <Route path="/Register" element={<Register />} />
 
-                <Route path="/Productdetails" element={< Home />} />
+                <Route path="/ProductDetails/:productId" element={<ProductDetails token={token} />} />
             </Routes>
         </>
     )
