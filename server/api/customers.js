@@ -4,11 +4,6 @@ const { client } = require("../db/client");
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
-//Generate Token
-function generateToken(user) {
-    return jwt.sign({ id: user.customer_id, email: user.email }, process.env.JWT_SECRET, { expiresIn: '1h' });
-}
-
 // Middleware to verify token
 function verifyToken(req, res, next) {
     const authHeader = req.headers['authorization'];
@@ -138,34 +133,6 @@ router.put("/register/:id",verifyToken, async (req, res) => {
     }
 });
 
-// POST login as a customer
-router.post("/login", async (req, res) => {
-    try {
-        const { username, password } = req.body;
-        
-        const user = await client.query('SELECT * FROM customers WHERE username = $1', [username]);
-        
-        if (user.rows.length === 0) {
-            return res.status(404).json({ message: 'User not found' });
-        }
-        
-        const isPasswordValid = await bcrypt.compare(password, user.rows[0].password_hash);
-        
-        if (!isPasswordValid) {
-            return res.status(401).json({ message: 'Invalid username or password' });
-        }
-        
-        const token = generateToken(user.rows[0]);
-        
-        res.status(200).json({ token });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Error logging in, please try again' });
-    }
-});
-router.get("/token?", verifyToken, async (req,res) => {
-    res.status(200).json({message: 'Access granted'});
-})
 
 // DELETE a customer
 router.delete("/:id",verifyToken, async (req, res) => {
