@@ -9,11 +9,11 @@ export default function Login({ setToken, token }) {
 
   const navigate = useNavigate()
 
-  async function handleSubmit(event) {
+  async function customerHandleSubmit(event) {
     event.preventDefault()
     try {
       let response = await fetch(
-        "http://localhost:3000/api/v1/customer/login", {
+        "http://localhost:3000/api/v1/login/customer", {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -23,40 +23,69 @@ export default function Login({ setToken, token }) {
           username: username,
           password: password
         })
-      })
+      }
+    )
       const result = await response.json();
       if (!response.ok) {
-        throw new Error(result.message || "Failed to login")
+        throw new Error(result.message || "Failed to login as customer")
       }
       setToken(result.token)
       localStorage.setItem("token", result.token)
       
       if (result.token) {
-        if (result.isAdmin) {
-          navigate("/Admin");
-        }
         navigate("/Home");
       }
-
     } catch (error) {
       setError(error.message);
     }
+  };
+
+  async function adminHandleSubmit(event) {
+    event.preventDefault();
+    try {
+      let response = await fetch(
+        "http://localhost:3000/api/v1/login/admin", {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            username: username,
+            password: password
+          })
+        }
+      )
+      const result = await response.json();
+      if (!response.ok) {
+        throw new Error(result.message || "Failed to login as admin")
+      }
+      setToken(result.token)
+      localStorage.setItem("token", result.token)
+
+      if (result.token) {
+        navigate("/Admin")
+      }
+    } catch (error) {
+      setError(error.message)
+    }
   }
+
 
   return (
     <>
-      <div id='loginErr'>
-        {error}
-      </div>
-      <form id='loginForm' onSubmit={handleSubmit}>
+      <form id='loginForm' onSubmit={customerHandleSubmit}>
         <label>Username:</label>
-        <input value={username} onChange={(event) => setUsername(event.target.value)}></input>
-        <br></br>
+        <input value={username} onChange={(event) => setUsername(event.target.value)} />
+        <br />
         <label>Password:</label>
-        <input value={password} onChange={(event) => setPassword(event.target.value)}></input>
-        <br></br>
-        <button>Submit</button>
+        <input value={password} type="password" onChange={(event) => setPassword(event.target.value)} />
+        <br />
+        <button type="submit">Customer Login</button>
+      </form>
+      <form onSubmit={adminHandleSubmit}>
+        <button type="submit">Admin Login</button>
       </form>
     </>
-  )
+  );
 }

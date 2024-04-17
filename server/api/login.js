@@ -83,8 +83,7 @@ router.post('/admin', async (req, res) => {
         const adminUser = await client.query('SELECT * FROM admin_users WHERE username = $1', [username]);
 
         if (adminUser.rows.length === 0) {
-            res.status(401).json({ message: 'Invalid username or password' });
-            // res.send({message: "hi"})
+            return res.status(401).json({ message: 'Invalid username or password' });
         }
 
         const hashedPassword = adminUser.rows[0].password_hash;
@@ -93,15 +92,13 @@ router.post('/admin', async (req, res) => {
 
         if (isPasswordValid) {
             const token = generateAdminToken(adminUser.rows[0]);
-             res.status(200).json({ token });
+            return res.status(200).json({ token });
         } else {
-             res.status(401).json({ message: 'Invalid username or password' });
-            // res.send({message: "hi"})
+            return res.status(401).json({ message: 'Invalid username or password' });
         }
     } catch (error) {
         console.error(error);
-        // res.status(500).json({ message: 'Error logging in as admin' });
-        // res.send({message: "hi"})
+        res.status(500).json({ message: 'Error logging in as admin' });
     }
 });
 router.get("/protected/admintoken", verifyAdminToken, isAdmin, async (req, res) => {
@@ -112,20 +109,20 @@ router.get("/protected/admintoken", verifyAdminToken, isAdmin, async (req, res) 
 router.post("/customer", async (req, res) => {
     try {
         const { username, password } = req.body;
-        console.log(username, password)
-        const {rows} = await client.query('SELECT * FROM customers WHERE username = $1', [username]);
-        console.log(rows)
-        if (!user) {
-            return res.status(401).json({ message: 'User not found' });
+        
+        const user = await client.query('SELECT * FROM customers WHERE username = $1', [username]);
+        
+        if (user.rows.length === 0) {
+            return res.status(404).json({ message: 'User not found' });
         }
         
-        const isPasswordValid = await bcrypt.compare(password, user.password_hash);
+        const isPasswordValid = await bcrypt.compare(password, user.rows[0].password_hash);
         
         if (!isPasswordValid) {
             return res.status(401).json({ message: 'Invalid username or password' });
         }
         
-        const token = generateToken(user);
+        const token = generateToken(user.rows[0]);
         
         res.status(200).json({ token });
     } catch (error) {
@@ -133,7 +130,7 @@ router.post("/customer", async (req, res) => {
         res.status(500).json({ message: 'Error logging in, please try again' });
     }
 });
-router.get("/protected/customertoken", verifyToken, async (req,res) => {
+router.get("/token", verifyToken, async (req,res) => {
     res.status(200).json({message: 'Access granted'});
 })
 
