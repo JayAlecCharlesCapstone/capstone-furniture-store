@@ -2,7 +2,7 @@
 import {useEffect, useState} from "react";
 import { useParams } from "react-router-dom";
 
-export default function ProductDetails({ token, setNewReservedproducts }) {
+export default function ProductDetails({ token, addToCart }) {
   const [products, setProducts] = useState(null);
   const {productId} = useParams();
 
@@ -22,21 +22,22 @@ export default function ProductDetails({ token, setNewReservedproducts }) {
 }, [productId]);
 
 
-async function reserveProducts(id) {
+async function addToCart() {
   try {
-      const response = await fetch(`http://localhost:3000/api/v1/products/${id}`, {
-          method: "PATCH",
+      const response = await fetch(`http://localhost:3000/api/v1/cart`, {
+          method: "POST",
           headers: {
               "Content-Type": "application/json",
               "Authorization": `Bearer ${token}`
           },
           body: JSON.stringify({
-              available: false
+            customer_id: 1,
+              product_id: productId,
+              quantity:1
           })
       });
       const result = await response.json();
       console.log(result);
-      setNewReservedproducts(result);
   } catch (error) {
       console.error(error);
   }
@@ -50,7 +51,7 @@ async function reserveProducts(id) {
                 <p>Description: {products.description}</p>
                 <p>Price: ${products.price}</p>
                 {token && (
-                    <button onClick={() => reserveProducts(products.id)}>Add to cart</button>
+                    <button onClick={() => addToCart(products.id)}>Add to cart</button>
                 )}
             </>
         ) : (
