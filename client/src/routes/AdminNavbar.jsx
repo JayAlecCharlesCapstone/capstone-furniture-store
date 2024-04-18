@@ -3,11 +3,12 @@ import { Link } from "react-router-dom";
 
 export default function AdminNavbar({ token, logOut}){
   return(
-    <div id= "Navigations">
+    <div id= "NavigationsAdmin">
       {token ? <button id ="logoutBtn" onClick={logOut}>Log Out</button>: <Link to ="login">Login</Link>}
-      <Link to = "/home"> Home</Link>
-      <Link to = "/register"> Register</Link>
-      <Link to = "/account"> Cart </Link>
+      <Link to = "/Home"> Home</Link>
+      <Link to = "/Register"> Register</Link>
+      <Link to = "/Account"> Cart </Link>
+      <Link to = "/AddProduct">Add Product</Link>
     </div>
   );
 }

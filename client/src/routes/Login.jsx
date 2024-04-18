@@ -6,6 +6,7 @@ export default function Login({ setToken, token }) {
   const [error, setError] = useState("")
   const [password, setPassword] = useState("")
   const [username, setUsername] = useState("")
+  const [isAdmin, setIsAdmin] = useState(false)
 
   const navigate = useNavigate()
 
@@ -43,33 +44,35 @@ export default function Login({ setToken, token }) {
   async function adminHandleSubmit(event) {
     event.preventDefault();
     try {
-      let response = await fetch(
+      const response = await fetch(
         "http://localhost:3000/api/v1/login/admin", {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
+            'Content-Type': 'application/json'
           },
           body: JSON.stringify({
             username: username,
             password: password
           })
         }
-      )
+      );
+  
       const result = await response.json();
+  
       if (!response.ok) {
-        throw new Error(result.message || "Failed to login as admin")
+        throw new Error(result.message || "Failed to login as admin");
       }
-      setToken(result.token)
-      localStorage.setItem("token", result.token)
 
-      if (result.token) {
-        navigate("/AdminHome")
-      }
+      const token = result.token;
+      localStorage.setItem("token", token);
+      setToken(token);
+      setIsAdmin(true)
+      navigate("/AdminHome");
     } catch (error) {
-      setError(error.message)
+      setError(error.message);
     }
   }
+  
 
 
   return (

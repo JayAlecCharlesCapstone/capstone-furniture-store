@@ -63,12 +63,12 @@ router.post('/register', async (req, res) => {
 router.get('/users', verifyAdminToken, async (req, res) => {
     try {
         const adminId = req.user.id;
-        const adminProfile = await client.query('SELECT * FROM admin_users WHERE admin_id = $1', [adminId]);
+        const adminData = await client.query('SELECT * FROM admin_users WHERE admin_id = $1', [adminId]);
 
         res.status(200).json({
             status: 'success',
             data: {
-                adminProfile: adminProfile.rows[0]
+                adminData: adminData.rows[0]
             }
         });
     } catch (error) {
