@@ -10,7 +10,7 @@ import UpdateProduct from './routes/UpdateProducts'
 import AdminHome from './routes/AdminHome'
 import AdminNavbar from './routes/AdminNavbar';
 import AddProduct from './routes/AddProduct';
-import AddProduct from './routes/AddProduct';
+
 
 
 function App() {
