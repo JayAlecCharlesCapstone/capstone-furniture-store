@@ -4,6 +4,7 @@ function AddProduct({ token }) {
     const [name, setName] = useState('');
     const [price, setPrice] = useState('');
     const [description, setDescription] = useState('');
+    const [stock_quantity, setStock_quantity] = useState('');
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -12,28 +13,32 @@ function AddProduct({ token }) {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
+                    'Authorization': `Bearer ${token}` 
                 },
                 body: JSON.stringify({
                     name,
                     price,
-                    description
+                    description,
+                    stock_quantity
                 })
             });
-
+    
             if (!response.ok) {
-                throw new Error('Failed to add new product');
+                const errorMessage = await response.text();
+                throw new Error(`Failed to add new product: ${errorMessage}`);
             }
-
+    
             alert('Product added successfully');
             setName('');
             setPrice('');
             setDescription('');
+            setStock_quantity('');
         } catch (error) {
             console.error('Error adding product:', error.message);
             alert('Failed to add product. Please try again.');
         }
     };
+    
 
     return (
         <div>
@@ -60,6 +65,14 @@ function AddProduct({ token }) {
                     type="text"
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
+                    required
+                />
+
+                <label>Quantity:</label>
+                <input
+                    type="number"
+                    value={stock_quantity}
+                    onChange={(e) => setStock_quantity(e.target.value)}
                     required
                 />
 
