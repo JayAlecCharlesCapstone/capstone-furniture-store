@@ -10,6 +10,7 @@ function AddProduct({ token }) {
 
         try {
             const response = await fetch('http://localhost:3000/api/v1/products', {
+                method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`

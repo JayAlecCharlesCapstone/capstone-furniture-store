@@ -21,6 +21,7 @@ function verifyAdminToken(req, res, next) {
             console.error('Token Verification Error:', err);
             return res.status(403).json({ message: 'Failed to authenticate token' });
         }
+        console.log(decoded.role)
         if (decoded.role !== 'admin') {
             return res.status(403).json({ message: 'Access forbidden: Admin role required' });
         }
