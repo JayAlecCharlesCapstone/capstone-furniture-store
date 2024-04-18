@@ -68,7 +68,6 @@ function verifyAdminToken(req, res, next) {
             return res.status(403).json({ message: 'Access forbidden: Admin role required' });
         }
         req.user = decoded;
-        console.log('Decoded User:', req.user);
         next();
     });
 };
