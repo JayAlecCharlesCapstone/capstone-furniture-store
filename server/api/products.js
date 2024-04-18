@@ -29,7 +29,7 @@ function verifyAdminToken(req, res, next) {
         console.log('Decoded User:', req.user);
         next();
     });
-}
+};
 
 // GET /api/v1/products
 router.get('/', async (req, res) => {

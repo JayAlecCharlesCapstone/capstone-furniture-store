@@ -10,10 +10,11 @@ import UpdateProduct from './routes/UpdateProducts'
 import AdminHome from './routes/AdminHome'
 import AdminNavbar from './routes/AdminNavbar';
 import AddProduct from './routes/AddProduct';
+import AddProduct from './routes/AddProduct';
 
 
 function App() {
-    const [token, setToken] = useState(null);
+    const [token, setToken] = useState('');
     const [customer, setCustomer] = useState(null);
     const [newCart, setNewCart] = useState(null);
     const [isAdmin, setIsAdmin] = useState(false);
@@ -103,7 +104,7 @@ function App() {
 
                 <Route path="/Register" element={<Register />} />
 
-                <Route path="/AddProduct" element={<AddProduct />} />
+                <Route path="/AddProduct" element={<AddProduct token={token} />} />
 
                 <Route path="/ProductDetails/:productId" element={<ProductDetails token={token} />} />
             </Routes>
