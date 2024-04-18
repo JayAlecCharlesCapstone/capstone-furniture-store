@@ -9,6 +9,7 @@ import Register from './routes/Register';
 import UpdateProduct from './routes/UpdateProducts'
 import AdminHome from './routes/AdminHome'
 import AdminNavbar from './routes/AdminNavbar';
+import AddProduct from './routes/AddProduct';
 
 
 function App() {
@@ -101,6 +102,8 @@ function App() {
                 <Route path="/Login" element={<Login setToken={setToken} />} />
 
                 <Route path="/Register" element={<Register />} />
+
+                <Route path="/AddProduct" element={<AddProduct />} />
 
                 <Route path="/ProductDetails/:productId" element={<ProductDetails token={token} />} />
             </Routes>
