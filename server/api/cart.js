@@ -57,10 +57,10 @@ router.post("/", verifyToken, async (req, res) => {
     try {
         const { customer_id, product_id, quantity } = req.body;
 
-        if (!customer_id || !product_id || !quantity) {
+        if (!product_id || !quantity) {
             return res.status(400).json({
                 status: "error",
-                message: "Error. Please provide customer_id, product_id, and quantity."
+                message: "Error. Please provide product_id, and quantity."
             });
         }
         
@@ -83,8 +83,8 @@ router.post("/", verifyToken, async (req, res) => {
 
         
         await client.query(
-            'INSERT INTO Cart (customer_id, product_id, quantity) VALUES ($1, $2, $3)',
-            [customer_id, product_id, quantity]
+            'INSERT INTO Cart (customer_id,product_id, quantity) VALUES ($1, $2, $3)',
+            [ customer_id,product_id, quantity]
         );
 
         res.status(201).json({
