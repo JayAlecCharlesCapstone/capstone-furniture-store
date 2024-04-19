@@ -3,10 +3,11 @@ import React, { useState, useEffect } from 'react';
 export default function Account({ token }) {
   const [customer, setCustomer] = useState(null);
   const [cart, setCart] = useState(null);
+  // console.log(customer)
 
   async function fetchCustomer() {
     try {
-      const response = await fetch("localhost:3000/api/v1/customer", {
+      const response = await fetch("http://localhost:3000/api/v1/customer", {
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
@@ -16,7 +17,8 @@ export default function Account({ token }) {
         throw new Error('Failed to fetch customer information');
       }
       const result = await response.json();
-      setCustomer(result);
+      setCustomer(result.data.customers);
+      // console.log(result)
     } catch (error) {
       console.error(error);
     }
@@ -24,7 +26,7 @@ export default function Account({ token }) {
 
   async function fetchCart() {
     try {
-      const response = await fetch("localhost:3000/api/v1/customer", {
+      const response = await fetch("http://localhost:3000/api/v1/cart", {
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
@@ -34,8 +36,9 @@ export default function Account({ token }) {
         throw new Error('Failed to fetch customer information');
       }
       const result = await response.json();
-      console.log(token)
-      setCart(result);
+      // console.log(token)
+      setCart(result.data.cart);
+      // console.log(result)
     } catch (error) {
       console.error(error);
     }
@@ -44,14 +47,14 @@ export default function Account({ token }) {
   useEffect(() => {
     if (token) {
       fetchCustomer();
-      fetchCart(); // You may need to call fetchCart here if you're fetching cart information separately
+      fetchCart(); 
     }
   }, [token]);
 
   async function returnProduct(productId) {
     try {
       const response = await fetch(
-        `localhost:3000/api/v1/cart/${productId}`, {
+        `http://localhost:3000/api/v1/cart/${productId}`, {
         method: "DELETE",
         headers: {
           'Content-Type': 'application/json',
@@ -61,7 +64,7 @@ export default function Account({ token }) {
       if (!response.ok) {
         throw new Error('Failed to return product');
       }
-      fetchCart(); // Fetch updated cart information after returning the product
+      fetchCart(); 
     } catch (error) {
       console.error(error);
     }
@@ -69,16 +72,16 @@ export default function Account({ token }) {
 
   return (
     <>
-      <div className='customerInformation'>
-        {customer && (
-          <>
-            <h1>Customer Login Information:</h1>
-            <h3>First Name:</h3> <p>{customer.firstname}</p>
-            <h3>Last Name:</h3> <p>{customer.lastname}</p>
-            <h3>Email:</h3> <p>{customer.email}</p>
-          </>
-        )}
+     <div className='customerInformation'>
+  <h2>Customer Information:</h2>
+  {customer && customer.length > 0 && (
+    customer.map(customer => (
+      <div key={customer.id}>
+        <p>Name: {customer.name}</p>
       </div>
+    ))
+  )}
+</div>
 
       <div className='cart'>
         <h2>Cart:</h2>

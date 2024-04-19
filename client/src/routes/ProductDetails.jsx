@@ -33,7 +33,7 @@ async function addToCart() {
           body: JSON.stringify({
             customer_id: 1,
               product_id: productId,
-              quantity:1
+              quantity: 1
           })
       });
       const result = await response.json();
