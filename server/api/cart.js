@@ -83,8 +83,8 @@ router.post("/", verifyToken, async (req, res) => {
 
         
         await client.query(
-            'INSERT INTO Cart (product_id, quantity) VALUES ($1, $2)',
-            [ product_id, quantity]
+            'INSERT INTO Cart (customer_id,product_id, quantity) VALUES ($1, $2, $3)',
+            [ customer_id,product_id, quantity]
         );
 
         res.status(201).json({
