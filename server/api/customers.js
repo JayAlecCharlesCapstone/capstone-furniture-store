@@ -87,6 +87,7 @@ router.get("/:customerId", async (req, res) => {
 router.get("/address", async (req, res) => {
     try {
         const result = await client.query("SELECT * FROM addresses");
+        console.log(result)
         res.json({
             status: "success",
             results: result.rows.length,
