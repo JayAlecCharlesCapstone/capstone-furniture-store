@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
-export default function AdminHome({ token, setNewReservedItem }) {
+export default function AdminHome({ token, setNewReservedItem, isAdmin, setIsAdmin }) {
     const [products, setProducts] = useState(null);
 
     useEffect(() => {

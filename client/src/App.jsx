@@ -16,22 +16,29 @@ function App() {
     const [isAdmin, setIsAdmin] = useState(false);
     const navigate = useNavigate();
 
-    useEffect(() => {
-        const savedToken = localStorage.getItem('token');
+   useEffect(() => {
+    const savedToken = localStorage.getItem('token');
+    const savedIsAdmin = localStorage.getItem('isAdmin');
 
-        if (savedToken) {
-            setToken(savedToken);
-            setIsAdmin(isAdmin);
-        }
-    }, [isAdmin]);
+    if (savedToken) {
+        setToken(savedToken);
+    }
+
+    if (savedIsAdmin === 'true') {
+        setIsAdmin(true);
+    } else {
+        setIsAdmin(false); 
+    }
+}, []);
 
     const logOut = () => {
         localStorage.removeItem('token');
-        localStorage.removeItem('isAdmin'); 
+        localStorage.removeItem('isAdmin');
         setToken(null);
         setIsAdmin(false);
         navigate('/Login');
     };
+    
 
 
 
