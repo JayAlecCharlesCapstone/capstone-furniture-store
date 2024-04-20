@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const { client } = require("../db/client");
 const jwt = require('jsonwebtoken');
-const {getOrdersByCustomerId} = require('../db/orders')
+const { getOrdersByCustomerId } = require('../db/orders')
 
 // Middleware to verify token
 function verifyToken(req, res, next) {
@@ -20,7 +20,7 @@ function verifyToken(req, res, next) {
 
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        req.user = decoded; 
+        req.user = decoded;
         next();
     } catch (error) {
         console.error('Token verification failed:', error.message);
@@ -29,7 +29,7 @@ function verifyToken(req, res, next) {
 }
 
 // POST /api/v1/orders
-router.post("/",verifyToken, async (req, res) => {
+router.post("/", verifyToken, async (req, res) => {
     try {
         const { customer_id, shipping_address_id } = req.body;
 
@@ -90,8 +90,8 @@ router.post("/",verifyToken, async (req, res) => {
 });
 
 //Get all orders for specific customer
-router.get("/:customerId",verifyToken, async (req,res) => {
-    const {customerId} = req.params;
+router.get("/:customerId", verifyToken, async (req, res) => {
+    const { customerId } = req.params;
 
     try {
         const orders = await getOrdersByCustomerId(customerId);

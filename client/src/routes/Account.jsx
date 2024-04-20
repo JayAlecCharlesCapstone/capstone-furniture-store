@@ -53,7 +53,6 @@ const Account = ({ token }) => {
   }, [token]);
 
   const returnProduct = async (cartId) => {
-    console.log('Deleting cart item with cart_id:', cartId);
     try {
       const response = await fetch(`http://localhost:3000/api/v1/cart/${cartId}`, {
         method: "DELETE",

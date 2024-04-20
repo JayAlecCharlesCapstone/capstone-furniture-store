@@ -20,7 +20,7 @@ function verifyToken(req, res, next) {
 
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        req.user = decoded; 
+        req.user = decoded;
         next();
     } catch (error) {
         console.error('Token verification failed:', error.message);
@@ -52,35 +52,35 @@ router.get("/", async (req, res) => {
 //GET single customer
 router.get("/:customerId", async (req, res) => {
     const { customerId } = req.params;
-  
+
     try {
-      const result = await client.query(
-        "SELECT * FROM customers WHERE customer_id = $1",
-        [customerId]
-      );
-  
-      if (result.rows.length === 0) {
-        return res.status(404).json({
-          status: "error",
-          message: "Customer not found",
+        const result = await client.query(
+            "SELECT * FROM customers WHERE customer_id = $1",
+            [customerId]
+        );
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({
+                status: "error",
+                message: "Customer not found",
+            });
+        }
+
+        res.json({
+            status: "success",
+            data: {
+                customer: result.rows[0],
+            },
         });
-      }
-  
-      res.json({
-        status: "success",
-        data: {
-          customer: result.rows[0], 
-        },
-      });
     } catch (error) {
-      console.error(error);
-      res.status(500).json({
-        status: "error",
-        message: "Internal server error",
-      });
+        console.error(error);
+        res.status(500).json({
+            status: "error",
+            message: "Internal server error",
+        });
     }
-  });
-  
+});
+
 
 
 // GET all customer addresses
@@ -105,7 +105,7 @@ router.get("/address", async (req, res) => {
 router.post("/register", async (req, res) => {
     try {
         const { name, email, phone, username, password } = req.body;
-        
+
         if (!name || !email || !username || !password) {
             return res.status(400).json({ message: 'Missing required fields' });
         }
@@ -133,24 +133,24 @@ router.post("/register", async (req, res) => {
 });
 
 // PUT update customer details
-router.put("/register/:id",verifyToken, async (req, res) => {
+router.put("/register/:id", verifyToken, async (req, res) => {
     try {
         const { name, email, phone, street_address, city, state, country, postal_code } = req.body;
-        
+
         await client.query('BEGIN');
-        
+
         const customerResult = await client.query(
             'UPDATE customers SET name = $1, email = $2, phone = $3 WHERE customer_id = $4 RETURNING *',
             [name, email, phone, req.params.id]
         );
-        
+
         const addressResult = await client.query(
             'UPDATE addresses SET street_address = $1, city = $2, state = $3, country = $4, postal_code = $5 WHERE address_id = $6',
             [street_address, city, state, country, postal_code, customerResult.rows[0].address_id]
         );
-        
+
         await client.query('COMMIT');
-        
+
         res.status(200).json({
             status: "success",
             data: {
@@ -169,7 +169,7 @@ router.put("/register/:id",verifyToken, async (req, res) => {
 
 
 // DELETE a customer
-router.delete("/:id",verifyToken, async (req, res) => {
+router.delete("/:id", verifyToken, async (req, res) => {
     try {
         const result = await client.query("DELETE FROM customers WHERE customer_id = $1", [req.params.id]);
         res.status(204).json({

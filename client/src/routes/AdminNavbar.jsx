@@ -1,14 +1,32 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React from 'react';
+import { Link } from 'react-router-dom';
 
-export default function AdminNavbar({ token, logOut}){
-  return(
-    <div id= "NavigationsAdmin">
-      {token ? <button id ="logoutBtn" onClick={logOut}>Log Out</button>: <Link to ="login">Login</Link>}
-      <Link to = "/Home"> Home</Link>
-      <Link to = "/Register"> Register</Link>
-      <Link to = "/Account"> Cart </Link>
-      <Link to = "/AddProduct">Add Product</Link>
+const AdminNavbar = ({ token, logOut }) => {
+  return (
+    <div className="admin-navbar">
+      {token ? (
+        <button className="logout-btn" onClick={logOut}>
+          Log Out
+        </button>
+      ) : (
+        <Link className="login-link" to="/Login">
+          Login
+        </Link>
+      )}
+      <Link className="nav-link" to="/AdminHome">
+        Home
+      </Link>
+      <Link className="nav-link" to="/Register">
+        Register
+      </Link>
+      <Link className="nav-link" to="/Account">
+        Cart
+      </Link>
+      <Link className="nav-link" to="/AddProduct">
+        Add Product
+      </Link>
     </div>
   );
-}
+};
+
+export default AdminNavbar;

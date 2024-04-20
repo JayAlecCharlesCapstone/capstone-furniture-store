@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const { client } = require("../db/client");
-const {customer} = require('../api/customers')
+const { customer } = require('../api/customers')
 const jwt = require('jsonwebtoken')
 // Middleware to verify token
 function verifyToken(req, res, next) {
@@ -19,7 +19,7 @@ function verifyToken(req, res, next) {
 
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        req.user = decoded; 
+        req.user = decoded;
         next();
     } catch (error) {
         console.error('Token verification failed:', error.message);
@@ -30,7 +30,7 @@ function verifyToken(req, res, next) {
 // Get all cart items with product details
 router.get("/", verifyToken, async (req, res) => {
     try {
-        const customerId = req.user.id; 
+        const customerId = req.user.id;
         const cartItems = await client.query(`
             SELECT c.*, p.name AS product_name, p.description AS product_description, p.price
             FROM cart c
@@ -60,7 +60,7 @@ router.get("/", verifyToken, async (req, res) => {
 router.post("/", verifyToken, async (req, res) => {
     try {
         const { product_id, quantity } = req.body;
-        const customerId = req.user.id; 
+        const customerId = req.user.id;
 
         if (!product_id || !quantity) {
             return res.status(400).json({
@@ -69,7 +69,7 @@ router.post("/", verifyToken, async (req, res) => {
             });
         }
 
-        
+
         const product = await client.query('SELECT * FROM products WHERE product_id = $1', [product_id]);
         if (product.rows.length === 0) {
             return res.status(404).json({
@@ -100,26 +100,26 @@ router.post("/", verifyToken, async (req, res) => {
 router.delete("/:cartId", verifyToken, async (req, res) => {
     const customerId = req.user.id;
     const cartId = req.params.cartId;
-  
+
     try {
-      await client.query(
-        `DELETE FROM cart WHERE customer_id = $1 AND cart_id = $2`,
-        [customerId, cartId]
-      );
-  
-      res.status(204).json({
-        status: "success",
-        message: "Item removed from cart."
-      });
+        await client.query(
+            `DELETE FROM cart WHERE customer_id = $1 AND cart_id = $2`,
+            [customerId, cartId]
+        );
+
+        res.status(204).json({
+            status: "success",
+            message: "Item removed from cart."
+        });
     } catch (error) {
-      console.error('Error removing item from cart:', error);
-      res.status(500).json({
-        status: "error",
-        message: "An error occurred while removing the item from the cart."
-      });
+        console.error('Error removing item from cart:', error);
+        res.status(500).json({
+            status: "error",
+            message: "An error occurred while removing the item from the cart."
+        });
     }
-  });
-  
+});
+
 
 
 

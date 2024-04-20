@@ -1,20 +1,19 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+export default function Login({ setToken, isAdmin }) {
+  const [error, setError] = useState('');
+  const [password, setPassword] = useState('');
+  const [username, setUsername] = useState('');
+  // const [isAdmin, setIsAdmin] = useState(null);
+  // console.log(isAdmin)
 
-export default function Login({ setToken, token }) {
-  const [error, setError] = useState("")
-  const [password, setPassword] = useState("")
-  const [username, setUsername] = useState("")
-  const [isAdmin, setIsAdmin] = useState(false)
+  const navigate = useNavigate();
 
-  const navigate = useNavigate()
-
-  async function customerHandleSubmit(event) {
-    event.preventDefault()
+  const customerHandleSubmit = async (event) => {
+    event.preventDefault();
     try {
-      let response = await fetch(
-        "http://localhost:3000/api/v1/login/customer", {
+      const response = await fetch("http://localhost:3000/api/v1/login/customer", {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -23,56 +22,43 @@ export default function Login({ setToken, token }) {
           username: username,
           password: password
         })
-      }
-    )
+      });
+
       const result = await response.json();
-      if (!response.ok) {
-        throw new Error(result.message || "Failed to login as customer")
-      }
-      setToken(result.token)
-      localStorage.setItem("token", result.token)
-      
-      if (result.token) {
-        navigate("/Home");
-      }
+      setToken(result.token);
+      setIsAdmin(false); 
+      localStorage.setItem('token', result.token);
+      navigate('/Home');
     } catch (error) {
       setError(error.message);
     }
   };
 
-  async function adminHandleSubmit(event) {
+  const adminHandleSubmit = async (event) => {
     event.preventDefault();
     try {
-      const response = await fetch(
-        "http://localhost:3000/api/v1/login/admin", {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            username: username,
-            password: password
-          })
-        }
-      );
+      const response = await fetch("http://localhost:3000/api/v1/login/admin", {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          username: username,
+          password: password
+        })
+      });
   
       const result = await response.json();
-  
-      if (!response.ok) {
-        throw new Error(result.message || "Failed to login as admin");
-      }
-
-      const token = result.token;
-      localStorage.setItem("token", token);
-      setToken(token);
-      setIsAdmin(true)
-      navigate("/AdminHome");
+      setToken(result.token);
+      localStorage.setItem('token', result.token);
+      localStorage.setItem('isAdmin', 'true'); 
+      setIsAdmin(true); 
+      navigate('/AdminHome');
     } catch (error) {
       setError(error.message);
     }
-  }
+  };
   
-
 
   return (
     <>
@@ -88,6 +74,7 @@ export default function Login({ setToken, token }) {
       <form onSubmit={adminHandleSubmit}>
         <button type="submit">Admin Login</button>
       </form>
+      {error && <p>{error}</p>}
     </>
   );
 }

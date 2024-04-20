@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
-export default function Home({ token, setNewReservedItem }) {
+const Home = ({ token, setNewReservedItem }) => {
     const [products, setProducts] = useState(null);
 
     useEffect(() => {
@@ -11,7 +11,7 @@ export default function Home({ token, setNewReservedItem }) {
                 const result = await response.json();
                 setProducts(result.data.products);
             } catch (error) {
-                console.error(error);
+                console.error("Error fetching products:", error);
             }
         }
         getProducts();
@@ -32,27 +32,31 @@ export default function Home({ token, setNewReservedItem }) {
             const result = await response.json();
             setNewReservedItem(result);
         } catch (error) {
-            console.error(error);
+            console.error("Error reserving product:", error);
         }
     }
 
     return (
-        <div id ="allProducts">
-        <>
-            {products && products.map(products => (
-                <div key={products.product_id} id={products.product_id}>
-                    <p>{products.name}</p>
-                    <p>${products.price}</p>
-                    <p>{products.stock_quantity}</p>
-                    <Link to={`/ProductDetails/${products.product_id}`}>
-                        <button>View Item</button>
-                    </Link>
-                    {token && (
-                        <button onClick={() => reserveProduct(products.product_id)}>Reserve Item</button>
-                    )}
-                </div>
-            ))}
-        </>
+        <div id="allProducts">
+            {products ? (
+                products.map(product => (
+                    <div key={product.product_id} id={product.product_id}>
+                        <p>{product.name}</p>
+                        <p>${product.price}</p>
+                        <p>{product.stock_quantity}</p>
+                        <Link to={`/ProductDetails/${product.product_id}`}>
+                            <button>View Item</button>
+                        </Link>
+                        {token && (
+                            <button onClick={() => reserveProduct(product.product_id)}>Add Item to Cart</button>
+                        )}
+                    </div>
+                ))
+            ) : (
+                <p>Loading products...</p>
+            )}
         </div>
     );
-}
+};
+
+export default Home;

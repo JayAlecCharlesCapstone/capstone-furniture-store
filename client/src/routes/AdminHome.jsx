@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 export default function AdminHome({ token, setNewReservedItem }) {
@@ -9,11 +9,9 @@ export default function AdminHome({ token, setNewReservedItem }) {
             try {
                 const response = await fetch("http://localhost:3000/api/v1/products");
                 const result = await response.json();
-                console.log(result);
                 setProducts(result.data.products);
-                console.log(result.data.products)
             } catch (error) {
-                console.error(error);
+                console.error("Error fetching products:", error);
             }
         }
         getProducts();
@@ -32,30 +30,31 @@ export default function AdminHome({ token, setNewReservedItem }) {
                 })
             });
             const result = await response.json();
-            console.log(result);
             setNewReservedItem(result);
         } catch (error) {
-            console.error(error);
+            console.error("Error reserving product:", error);
         }
     }
 
     return (
-        <div id ="allProducts">
-        <>
-            {products && products.map(products => (
-                <div key={products.product_id} id={products.product_id}>
-                    <p>{products.name}</p>
-                    <p>${products.price}</p>
-                    <p>{products.stock_quantity}</p>
-                    <Link to={`/ProductDetails/${products.product_id}`}>
-                        <button>View Item</button>
-                    </Link>
-                    {token && (
-                        <button onClick={() => reserveProduct(products.product_id)}>Reserve Item</button>
-                    )}
-                </div>
-            ))}
-        </>
+        <div id="allProducts">
+            {products ? (
+                products.map(product => (
+                    <div key={product.product_id} id={product.product_id}>
+                        <p>{product.name}</p>
+                        <p>${product.price}</p>
+                        <p>Stock: {product.stock_quantity}</p>
+                        <Link to={`/ProductDetails/${product.product_id}`}>
+                            <button>View Item</button>
+                        </Link>
+                        {token && (
+                            <button onClick={() => reserveProduct(product.product_id)}>Add Item to Cart</button>
+                        )}
+                    </div>
+                ))
+            ) : (
+                <p>Loading products...</p>
+            )}
         </div>
     );
 }

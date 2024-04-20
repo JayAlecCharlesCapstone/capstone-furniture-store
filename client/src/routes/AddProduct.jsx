@@ -13,7 +13,7 @@ function AddProduct({ token }) {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}` 
+                    'Authorization': `Bearer ${token}`
                 },
                 body: JSON.stringify({
                     name,
@@ -22,12 +22,12 @@ function AddProduct({ token }) {
                     stock_quantity
                 })
             });
-    
+
             if (!response.ok) {
                 const errorMessage = await response.text();
                 throw new Error(`Failed to add new product: ${errorMessage}`);
             }
-    
+
             alert('Product added successfully');
             setName('');
             setPrice('');
@@ -38,7 +38,7 @@ function AddProduct({ token }) {
             alert('Failed to add product. Please try again.');
         }
     };
-    
+
 
     return (
         <div>

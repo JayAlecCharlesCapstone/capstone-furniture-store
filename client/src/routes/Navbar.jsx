@@ -1,13 +1,30 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React from 'react';
+import { Link } from 'react-router-dom';
 
-export default function Navbar({ token, logOut}){
-  return(
-    <div id= "Navigations">
-      {token ? <button id ="logoutBtn" onClick={logOut}>Log Out</button>: <Link to ="login">Login</Link>}
-      <Link to = "/home"> Home</Link>
-      <Link to = "/register"> Register</Link>
-      <Link to = "/account"> Cart </Link>
+const Navbar = ({ token, logOut }) => {
+  return (
+    <div className="navbar">
+      {token ? (
+        <button className="logout-btn" onClick={logOut}>
+          Log Out
+        </button>
+      ) : (
+        <Link className="login-link" to="/Login">
+          Login
+        </Link>
+      )}
+      <Link className="nav-link" to="/Home">
+        Home
+      </Link>
+      <Link className="nav-link" to="/Register">
+        Register
+      </Link>
+      <Link className="nav-link" to="/Account">
+        Cart
+      </Link>
+
     </div>
   );
-}
+};
+
+export default Navbar;
