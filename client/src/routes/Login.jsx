@@ -1,12 +1,10 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-export default function Login({ setToken, isAdmin }) {
+export default function Login({ setToken, isAdmin, setIsAdmin }) {
   const [error, setError] = useState('');
   const [password, setPassword] = useState('');
   const [username, setUsername] = useState('');
-  // const [isAdmin, setIsAdmin] = useState(null);
-  // console.log(isAdmin)
 
   const navigate = useNavigate();
 

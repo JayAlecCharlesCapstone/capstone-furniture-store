@@ -15,11 +15,9 @@ function App() {
     const [newCart, setNewCart] = useState(null);
     const [isAdmin, setIsAdmin] = useState(false);
     const navigate = useNavigate();
-    console.log(isAdmin)
 
     useEffect(() => {
         const savedToken = localStorage.getItem('token');
-        // const isAdmin = localStorage.getItem('isAdmin') === 'true';
 
         if (savedToken) {
             setToken(savedToken);
@@ -40,7 +38,7 @@ function App() {
     return (
         <>
           {isAdmin ? (
-            <AdminNavbar token={token} logOut={logOut} isAdmin={isAdmin} setIsAdmin={setIsAdmin} />
+            <AdminNavbar token={token} logOut={logOut} isAdmin={isAdmin} />
           ) : (
             <Navbar token={token} logOut={logOut} />
           )}
@@ -48,7 +46,7 @@ function App() {
             <Route path="/Account" element={<Account token={token} newCart={newCart} />} />
             <Route path="/Home" element={<Home token={token} newCart={newCart} />} />
             <Route path="/AdminHome" element={<AdminHome token={token} newCart={newCart} isAdmin={isAdmin} />} />
-            <Route path="/Login" element={<Login setToken={setToken} />} />
+            <Route path="/Login" element={<Login setToken={setToken} isAdmin={isAdmin} logOut={logOut} setIsAdmin={setIsAdmin} />} />
             <Route path="/Register" element={<Register />} />
             <Route path="/AddProduct" element={<AddProduct token={token} />} />
             <Route path="/ProductDetails/:productId" element={<ProductDetails token={token} />} />
