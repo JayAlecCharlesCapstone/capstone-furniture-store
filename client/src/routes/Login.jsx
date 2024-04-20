@@ -18,7 +18,6 @@ export default function Login({ setToken, token }) {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({
           username: username,
@@ -48,7 +47,7 @@ export default function Login({ setToken, token }) {
         "http://localhost:3000/api/v1/login/admin", {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
           },
           body: JSON.stringify({
             username: username,

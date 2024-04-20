@@ -49,11 +49,45 @@ router.get("/", async (req, res) => {
     }
 });
 
+//GET single customer
+router.get("/:customerId", async (req, res) => {
+    const { customerId } = req.params;
+  
+    try {
+      const result = await client.query(
+        "SELECT * FROM customers WHERE customer_id = $1",
+        [customerId]
+      );
+  
+      if (result.rows.length === 0) {
+        return res.status(404).json({
+          status: "error",
+          message: "Customer not found",
+        });
+      }
+  
+      res.json({
+        status: "success",
+        data: {
+          customer: result.rows[0], 
+        },
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({
+        status: "error",
+        message: "Internal server error",
+      });
+    }
+  });
+  
+
 
 // GET all customer addresses
 router.get("/address", async (req, res) => {
     try {
         const result = await client.query("SELECT * FROM addresses");
+        console.log(result)
         res.json({
             status: "success",
             results: result.rows.length,
