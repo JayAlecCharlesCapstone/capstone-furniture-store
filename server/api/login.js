@@ -14,13 +14,22 @@ function generateAdminToken(adminUser) {
 
 function isAdmin(req, res, next) {
     if (req.user && req.user.role === 'admin') {
-        next(); 
+        next();
     } else {
         res.status(403).json({ message: 'Access forbidden: Admin role required' });
     }
 };
 function generateToken(user) {
-    return jwt.sign({ id: user.customer_id, email: user.email }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    const tokenData = {
+        id: user.customer_id,
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+    };
+
+    const token = jwt.sign(tokenData, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+    return token;
 }
 
 function verifyToken(req, res, next) {
@@ -38,7 +47,7 @@ function verifyToken(req, res, next) {
 
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        req.user = decoded; 
+        req.user = decoded;
         next();
     } catch (error) {
         console.error('Token verification failed:', error.message);
@@ -83,7 +92,7 @@ router.post('/admin', async (req, res) => {
 
         if (adminUser.rows.length === 0) {
             res.status(401).json({ message: 'Invalid username or password' });
-            // res.send({message: "hi"})
+
         }
 
         const hashedPassword = adminUser.rows[0].password_hash;
@@ -92,15 +101,14 @@ router.post('/admin', async (req, res) => {
 
         if (isPasswordValid) {
             const token = generateAdminToken(adminUser.rows[0]);
-             res.status(200).json({ token });
+            res.status(200).json({ token });
         } else {
-             res.status(401).json({ message: 'Invalid username or password' });
-            // res.send({message: "hi"})
+            res.status(401).json({ message: 'Invalid username or password' });
+
         }
     } catch (error) {
         console.error(error);
-        // res.status(500).json({ message: 'Error logging in as admin' });
-        // res.send({message: "hi"})
+
     }
 });
 router.get("/protected/admintoken", verifyAdminToken, isAdmin, async (req, res) => {
@@ -111,29 +119,29 @@ router.get("/protected/admintoken", verifyAdminToken, isAdmin, async (req, res) 
 router.post("/customer", async (req, res) => {
     try {
         const { username, password } = req.body;
-        
+
         const user = await client.query('SELECT * FROM customers WHERE username = $1', [username]);
-        
+
         if (user.rows.length === 0) {
             return res.status(404).json({ message: 'User not found' });
         }
-        
+
         const isPasswordValid = await bcrypt.compare(password, user.rows[0].password_hash);
-        
+
         if (!isPasswordValid) {
             return res.status(401).json({ message: 'Invalid username or password' });
         }
-        
+
         const token = generateToken(user.rows[0]);
-        
+
         res.status(200).json({ token });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Error logging in, please try again' });
     }
 });
-router.get("/protected/customertoken", verifyToken, async (req,res) => {
-    res.status(200).json({message: 'Access granted'});
+router.get("/protected/customertoken", verifyToken, async (req, res) => {
+    res.status(200).json({ message: 'Access granted' });
 })
 
 

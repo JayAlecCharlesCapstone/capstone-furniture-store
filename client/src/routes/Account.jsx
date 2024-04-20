@@ -1,30 +1,34 @@
 import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 
-export default function Account({ token }) {
+const Account = ({ token }) => {
   const [customer, setCustomer] = useState(null);
-  const [cart, setCart] = useState(null);
-  // console.log(customer)
+  const [cart, setCart] = useState([]);
 
-  async function fetchCustomer() {
+  const decodeToken = (token) => {
     try {
-      const response = await fetch("http://localhost:3000/api/v1/customer", {
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        }
-      });
-      if (!response.ok) {
-        throw new Error('Failed to fetch customer information');
-      }
-      const result = await response.json();
-      setCustomer(result.data.customers);
-      // console.log(result)
+      const decoded = JSON.parse(atob(token.split('.')[1]));
+      return decoded;
     } catch (error) {
-      console.error(error);
+      console.error('Error decoding token:', error);
+      return null;
     }
-  }
+  };
 
-  async function fetchCart() {
+  useEffect(() => {
+    if (token) {
+      const decodedToken = decodeToken(token);
+      if (decodedToken) {
+        setCustomer({
+          name: decodedToken.name,
+          email: decodedToken.email,
+          phone: decodedToken.phone,
+        });
+      }
+    }
+  }, [token]);
+
+  const fetchCart = async () => {
     try {
       const response = await fetch("http://localhost:3000/api/v1/cart", {
         headers: {
@@ -33,63 +37,68 @@ export default function Account({ token }) {
         }
       });
       if (!response.ok) {
-        throw new Error('Failed to fetch customer information');
+        throw new Error('Failed to fetch cart information');
       }
       const result = await response.json();
-      // console.log(token)
-      setCart(result.data.cart);
-      // console.log(result)
+      setCart(result.data.cartItems);
     } catch (error) {
-      console.error(error);
+      console.error('Error fetching cart information:', error);
     }
-  }
+  };
 
   useEffect(() => {
     if (token) {
-      fetchCustomer();
-      fetchCart(); 
+      fetchCart();
     }
   }, [token]);
 
-  async function returnProduct(productId) {
+  const returnProduct = async (cartId) => {
+    console.log('Deleting cart item with cart_id:', cartId);
     try {
-      const response = await fetch(
-        `http://localhost:3000/api/v1/cart/${productId}`, {
+      const response = await fetch(`http://localhost:3000/api/v1/cart/${cartId}`, {
         method: "DELETE",
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         }
       });
+
       if (!response.ok) {
         throw new Error('Failed to return product');
       }
-      fetchCart(); 
+
+      await fetchCart();
+
+      console.log('Product returned successfully!');
     } catch (error) {
-      console.error(error);
+      console.error('Error returning product:', error);
     }
-  }
+  };
+
+
 
   return (
-    <>
-     <div className='customerInformation'>
-  <h2>Customer Information:</h2>
-  {customer && customer.length > 0 && (
-    customer.map(customer => (
-      <div key={customer.id}>
-        <p>Name: {customer.name}</p>
-      </div>
-    ))
-  )}
-</div>
+    <div>
+      <h2>Account Information</h2>
+      {customer ? (
+        <div>
+          <p><strong>Name:</strong> {customer.name}</p>
+          <p><strong>Email:</strong> {customer.email}</p>
+          <p><strong>Phone:</strong> {customer.phone}</p>
+        </div>
+      ) : (
+        <p>Loading customer information...</p>
+      )}
 
       <div className='cart'>
         <h2>Cart:</h2>
         {cart && cart.length > 0 ? (
-          cart.map(product => (
-            <div key={product.id}>
-              <p>{product.details}</p>
-              <button onClick={() => returnProduct(product.id)}>Return Product</button>
+          cart.map(item => (
+            <div key={item.cart_id}>
+              <p><strong>Product Name:</strong> {item.product_name}</p>
+              <p><strong>Description:</strong> {item.product_description}</p>
+              <p><strong>Price:</strong> ${item.price}</p>
+              <button onClick={() => returnProduct(item.cart_id)}>Return Product</button>
             </div>
           ))
         ) : (
@@ -98,6 +107,8 @@ export default function Account({ token }) {
           </div>
         )}
       </div>
-    </>
+    </div>
   );
-}
+};
+
+export default Account;

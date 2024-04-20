@@ -9,9 +9,7 @@ export default function Home({ token, setNewReservedItem }) {
             try {
                 const response = await fetch("http://localhost:3000/api/v1/products");
                 const result = await response.json();
-                console.log(result);
                 setProducts(result.data.products);
-                console.log(result.data.products)
             } catch (error) {
                 console.error(error);
             }
@@ -32,7 +30,6 @@ export default function Home({ token, setNewReservedItem }) {
                 })
             });
             const result = await response.json();
-            console.log(result);
             setNewReservedItem(result);
         } catch (error) {
             console.error(error);

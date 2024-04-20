@@ -14,7 +14,7 @@ import AddProduct from './routes/AddProduct';
 
 
 function App() {
-    const [token, setToken] = useState('');
+    const [token, setToken] = useState(null);
     const [customer, setCustomer] = useState(null);
     const [newCart, setNewCart] = useState(null);
     const [isAdmin, setIsAdmin] = useState(false);
@@ -43,14 +43,14 @@ function App() {
 
     const fetchAdminData = async (token) => {
         try {
-            if(token) {
+            if (token) {
                 const response = await fetch("http://localhost:3000/api/v1/admin/users", {
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${token}`
                     }
                 });
-                if (!response.ok){
+                if (!response.ok) {
                     throw new Error('Failed to fetch admin user information')
                 }
                 const result = await response.json();
@@ -80,7 +80,7 @@ function App() {
 
     useEffect(() => {
         let savedAdminToken = localStorage.getItem("token")
-        if(savedAdminToken !== "null") {
+        if (savedAdminToken !== "null") {
             setToken(savedAdminToken)
             fetchAdminData(savedAdminToken)
         }
@@ -98,7 +98,7 @@ function App() {
 
                 <Route path="/Home" element={<Home />} />
 
-                <Route path='/AdminHome' element={<AdminHome/>} />
+                <Route path='/AdminHome' element={<AdminHome />} />
 
                 <Route path="/Login" element={<Login setToken={setToken} />} />
 
