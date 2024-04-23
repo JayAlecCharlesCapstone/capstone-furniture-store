@@ -67,8 +67,7 @@ const Account = ({ token }) => {
       }
 
       await fetchCart();
-
-      console.log('Product returned successfully!');
+      alert('Product returned successfully!');
     } catch (error) {
       console.error('Error returning product:', error);
     }

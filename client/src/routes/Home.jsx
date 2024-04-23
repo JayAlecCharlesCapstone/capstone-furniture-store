@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 
 const Home = ({ token, setNewReservedItem }) => {
     const [products, setProducts] = useState(null);
+    const { productId } = useParams();
 
     useEffect(() => {
         async function getProducts() {
@@ -17,22 +18,23 @@ const Home = ({ token, setNewReservedItem }) => {
         getProducts();
     }, []);
 
-    async function reserveProduct(id) {
+    async function addToCart(productId) {
         try {
-            const response = await fetch(`http://localhost:3000/api/v1/products/${id}`, {
-                method: "PATCH",
+            const response = await fetch(`http://localhost:3000/api/v1/cart`, {
+                method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                     "Authorization": `Bearer ${token}`
                 },
                 body: JSON.stringify({
-                    available: false
+                    product_id: productId,
+                    quantity: 1
                 })
             });
             const result = await response.json();
-            setNewReservedItem(result);
+            alert('Product added to cart!');
         } catch (error) {
-            console.error("Error reserving product:", error);
+            console.error("Error adding item to cart:", error);
         }
     }
 
@@ -48,7 +50,7 @@ const Home = ({ token, setNewReservedItem }) => {
                             <button>View Item</button>
                         </Link>
                         {token && (
-                            <button onClick={() => reserveProduct(product.product_id)}>Add Item to Cart</button>
+                            <button onClick={() => addToCart(product.product_id)}>Add to cart</button>
                         )}
                     </div>
                 ))

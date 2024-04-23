@@ -20,7 +20,7 @@ export default function ProductDetails({ token, addToCart }) {
   }, [productId]);
 
 
-  async function addToCart() {
+  async function addToCart(productId) {
     try {
       const response = await fetch(`http://localhost:3000/api/v1/cart`, {
         method: "POST",
@@ -34,6 +34,7 @@ export default function ProductDetails({ token, addToCart }) {
         })
       });
       const result = await response.json();
+      alert('Product added to cart!');
     } catch (error) {
       console.error(error);
     }
@@ -47,7 +48,7 @@ export default function ProductDetails({ token, addToCart }) {
           <p>Description: {products.description}</p>
           <p>Price: ${products.price}</p>
           {token && (
-            <button onClick={() => addToCart(products.id)}>Add to cart</button>
+            <button onClick={() => addToCart(products.product_id)}>Add to cart</button>
           )}
         </>
       ) : (
