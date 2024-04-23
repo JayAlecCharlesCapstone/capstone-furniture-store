@@ -6,7 +6,7 @@ export default function Account({ token }) {
 
   async function fetchCustomer() {
     try {
-      const response = await fetch("localhost:3000/api/v1/customer", {
+      const response = await fetch("http://localhost:3000/api/v1/customer", {
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
@@ -24,7 +24,7 @@ export default function Account({ token }) {
 
   async function fetchCart() {
     try {
-      const response = await fetch("localhost:3000/api/v1/customer", {
+      const response = await fetch("http://localhost:3000/api/v1/customer", {
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
@@ -51,7 +51,7 @@ export default function Account({ token }) {
   async function returnProduct(productId) {
     try {
       const response = await fetch(
-        `localhost:3000/api/v1/cart/${productId}`, {
+        `http://localhost:3000/api/v1/cart/${productId}`, {
         method: "DELETE",
         headers: {
           'Content-Type': 'application/json',
