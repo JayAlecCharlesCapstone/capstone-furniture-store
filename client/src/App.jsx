@@ -1,118 +1,65 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react';
 import { Routes, Route, useNavigate } from 'react-router-dom';
 import Account from './routes/Account';
 import Home from './routes/Home';
 import Login from './routes/Login';
 import Navbar from './routes/Navbar';
-import ProductDetails from "./routes/ProductDetails";
+import ProductDetails from './routes/ProductDetails';
 import Register from './routes/Register';
-import UpdateProduct from './routes/UpdateProducts'
-import AdminHome from './routes/AdminHome'
+import AdminHome from './routes/AdminHome';
 import AdminNavbar from './routes/AdminNavbar';
 import AddProduct from './routes/AddProduct';
 
-
-
 function App() {
-    const [token, setToken] = useState('');
-    const [customer, setCustomer] = useState(null);
+    const [token, setToken] = useState(null);
     const [newCart, setNewCart] = useState(null);
     const [isAdmin, setIsAdmin] = useState(false);
     const navigate = useNavigate();
 
+   useEffect(() => {
+    const savedToken = localStorage.getItem('token');
+    const savedIsAdmin = localStorage.getItem('isAdmin');
 
-    const fetchCustomerData = async (token) => {
-        try {
-            if (token) {
-                const response = await fetch("http://localhost:3000/api/v1/customer", {
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-                if (!response.ok) {
-                    throw new Error('Failed to fetch customer user information')
-                }
-                const result = await response.json();
-                setCustomer(result);
-            }
-        } catch (error) {
-            console.error(error);
-        }
-    };
-
-    const fetchAdminData = async (token) => {
-        try {
-            if(token) {
-                const response = await fetch("http://localhost:3000/api/v1/admin/users", {
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-                if (!response.ok){
-                    throw new Error('Failed to fetch admin user information')
-                }
-                const result = await response.json();
-                setIsAdmin(true)
-            }
-        } catch (error) {
-            console.error(error)
-        }
+    if (savedToken) {
+        setToken(savedToken);
     }
 
+    if (savedIsAdmin === 'true') {
+        setIsAdmin(true);
+    } else {
+        setIsAdmin(false); 
+    }
+}, []);
 
     const logOut = () => {
-        localStorage.removeItem("token");
+        localStorage.removeItem('token');
+        localStorage.removeItem('isAdmin');
         setToken(null);
-        setCustomer(null);
         setIsAdmin(false);
         navigate('/Login');
     };
+    
 
-    useEffect(() => {
-        let savedToken = localStorage.getItem("token");
-        if (savedToken !== "null") {
-            setToken(savedToken);
-            fetchCustomerData(savedToken)
-        }
-    }, []);
 
-    useEffect(() => {
-        let savedAdminToken = localStorage.getItem("token")
-        if(savedAdminToken !== "null") {
-            setToken(savedAdminToken)
-            fetchAdminData(savedAdminToken)
-        }
-    }, [isAdmin, token]);
 
     return (
         <>
-            {isAdmin ? (
-                <AdminNavbar token={token} logOut={logOut} />
-            ) : (
-                <Navbar token={token} logOut={logOut} />
-            )}
-            <Routes>
-                <Route path="/Account" element={<Account token={token} newCart={newCart} customer={customer} />} />
-
-                <Route path="/Home" element={<Home />} />
-
-                <Route path='/AdminHome' element={<AdminHome/>} />
-
-                <Route path="/Login" element={<Login setToken={setToken} />} />
-
-                <Route path="/Register" element={<Register />} />
-
-                <Route path="/AddProduct" element={<AddProduct token={token} />} />
-
-                <Route path="/ProductDetails/:productId" element={<ProductDetails token={token} />} />
-            </Routes>
+          {isAdmin ? (
+            <AdminNavbar token={token} logOut={logOut} isAdmin={isAdmin} />
+          ) : (
+            <Navbar token={token} logOut={logOut} />
+          )}
+          <Routes>
+            <Route path="/Account" element={<Account token={token} newCart={newCart} />} />
+            <Route path="/Home" element={<Home token={token} newCart={newCart} />} />
+            <Route path="/AdminHome" element={<AdminHome token={token} newCart={newCart} isAdmin={isAdmin} />} />
+            <Route path="/Login" element={<Login setToken={setToken} isAdmin={isAdmin} logOut={logOut} setIsAdmin={setIsAdmin} />} />
+            <Route path="/Register" element={<Register />} />
+            <Route path="/AddProduct" element={<AddProduct token={token} />} />
+            <Route path="/ProductDetails/:productId" element={<ProductDetails token={token} />} />
+          </Routes>
         </>
-    )
-}
-
-
+      );
+    }
 
 export default App;
-

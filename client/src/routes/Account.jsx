@@ -1,28 +1,34 @@
 import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 
-export default function Account({ token }) {
+const Account = ({ token }) => {
   const [customer, setCustomer] = useState(null);
-  const [cart, setCart] = useState(null);
-console.log(customer)
-  async function fetchCustomer() {
+  const [cart, setCart] = useState([]);
+
+  const decodeToken = (token) => {
     try {
-      const response = await fetch("http://localhost:3000/api/v1/customer", {
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      });
-      if (!response.ok) {
-        throw new Error('Failed to fetch customer information');
-      }
-      const result = await response.json();
-      setCustomer(result.data.customers);
-      console.log(result)
+      const decoded = JSON.parse(atob(token.split('.')[1]));
+      return decoded;
     } catch (error) {
-      console.error(error);
+      console.error('Error decoding token:', error);
+      return null;
     }
-  }
-  
-  async function fetchCart() {
+  };
+
+  useEffect(() => {
+    if (token) {
+      const decodedToken = decodeToken(token);
+      if (decodedToken) {
+        setCustomer({
+          name: decodedToken.name,
+          email: decodedToken.email,
+          phone: decodedToken.phone,
+        });
+      }
+    }
+  }, [token]);
+
+  const fetchCart = async () => {
     try {
       const response = await fetch("http://localhost:3000/api/v1/cart", {
         headers: {
@@ -34,58 +40,63 @@ console.log(customer)
         throw new Error('Failed to fetch cart information');
       }
       const result = await response.json();
-      setCart(result);
+      setCart(result.data.cartItems);
     } catch (error) {
-      console.error(error);
+      console.error('Error fetching cart information:', error);
     }
-  }
+  };
 
   useEffect(() => {
     if (token) {
-      fetchCustomer();
       fetchCart();
     }
   }, [token]);
 
-  async function returnProduct(productId) {
+  const returnProduct = async (cartId) => {
     try {
-      const response = await fetch(
-        `localhost:3000/api/v1/cart/${productId}`, {
+      const response = await fetch(`http://localhost:3000/api/v1/cart/${cartId}`, {
         method: "DELETE",
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         }
       });
+
       if (!response.ok) {
         throw new Error('Failed to return product');
       }
-      fetchCart(); 
+
+      await fetchCart();
+      alert('Product returned successfully!');
     } catch (error) {
-      console.error(error);
+      console.error('Error returning product:', error);
     }
-  }
+  };
+
+
 
   return (
-    <>
-      <div className='customerInformation'>
-        {customer && (
-          <>
-            <h1>Customer Login Information:</h1>
-            <h3>Name:</h3> <p>{customer[0].name}</p>
-            <h3>Last Name:</h3> <p>{customer.lastname}</p>
-            <h3>Email:</h3> <p>{customer.email}</p>
-          </>
-        )}
-      </div>
+    <div>
+      <h2>Account Information</h2>
+      {customer ? (
+        <div>
+          <p><strong>Name:</strong> {customer.name}</p>
+          <p><strong>Email:</strong> {customer.email}</p>
+          <p><strong>Phone:</strong> {customer.phone}</p>
+        </div>
+      ) : (
+        <p>Loading customer information...</p>
+      )}
 
       <div className='cart'>
         <h2>Cart:</h2>
         {cart && cart.length > 0 ? (
-          cart.map(product => (
-            <div key={product.id}>
-              <p>{product.details}</p>
-              <button onClick={() => returnProduct(product.id)}>Return Product</button>
+          cart.map(item => (
+            <div key={item.cart_id}>
+              <p><strong>Product Name:</strong> {item.product_name}</p>
+              <p><strong>Description:</strong> {item.product_description}</p>
+              <p><strong>Price:</strong> ${item.price}</p>
+              <button onClick={() => returnProduct(item.cart_id)}>Return Product</button>
             </div>
           ))
         ) : (
@@ -94,6 +105,8 @@ console.log(customer)
           </div>
         )}
       </div>
-    </>
+    </div>
   );
-}
+};
+
+export default Account;

@@ -40,7 +40,7 @@ export default function Register() {
       setEmail("");
       setPassword("");
       setIsLoading(false);
-      alert("Registration successful!"); 
+      alert("Registration successful!");
     } catch (error) {
       console.error(error);
       setError("Failed to register. Please try again.");

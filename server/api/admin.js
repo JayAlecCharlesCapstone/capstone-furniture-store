@@ -27,7 +27,6 @@ function verifyAdminToken(req, res, next) {
             return res.status(403).json({ message: 'Access forbidden: Admin role required' });
         }
         req.user = decoded;
-        console.log('Decoded User:', req.user);
         next();
     });
 };
@@ -38,7 +37,7 @@ router.post('/register', async (req, res) => {
         const { username, password } = req.body;
         const saltRounds = 10;
         const hashedPassword = await bcrypt.hash(password, saltRounds);
-        
+
         const result = await client.query(
             'INSERT INTO admin_users (username, password_hash) VALUES ($1, $2) RETURNING *',
             [username, hashedPassword]
