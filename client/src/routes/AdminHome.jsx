@@ -1,23 +1,24 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
-export default function AdminHome({ token, setNewReservedItem, isAdmin, setIsAdmin }) {
+export default function AdminHome({ token, setNewReservedItem }) {
     const [products, setProducts] = useState(null);
 
-    useEffect(() => {
-        async function getProducts() {
-            try {
-                const response = await fetch("http://localhost:3000/api/v1/products");
-                const result = await response.json();
-                setProducts(result.data.products);
-            } catch (error) {
-                console.error("Error fetching products:", error);
-            }
+    const getProducts = async () => {
+        try {
+            const response = await fetch("http://localhost:3000/api/v1/products");
+            const result = await response.json();
+            setProducts(result.data.products);
+        } catch (error) {
+            console.error("Error fetching products:", error);
         }
+    };
+
+    useEffect(() => {
         getProducts();
     }, []);
-
-    async function reserveProduct(id) {
+    
+    const reserveProduct = async (id) => {
         try {
             const response = await fetch(`http://localhost:3000/api/v1/products/${id}`, {
                 method: "PATCH",
@@ -34,7 +35,25 @@ export default function AdminHome({ token, setNewReservedItem, isAdmin, setIsAdm
         } catch (error) {
             console.error("Error reserving product:", error);
         }
-    }
+    };
+
+    const removeProduct = async (id) => {
+        try {
+            const response = await fetch(`http://localhost:3000/api/v1/products/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            if (!response.ok) {
+                throw new Error('Failed to delete product');
+            }
+
+            await getProducts();
+        } catch (error) {
+            console.error("Error removing product:", error);
+        }
+    };
 
     return (
         <div id="allProducts">
@@ -50,6 +69,7 @@ export default function AdminHome({ token, setNewReservedItem, isAdmin, setIsAdm
                         {token && (
                             <button onClick={() => reserveProduct(product.product_id)}>Add Item to Cart</button>
                         )}
+                        <button onClick={() => removeProduct(product.product_id)}>Remove Product</button>
                     </div>
                 ))
             ) : (
