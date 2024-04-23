@@ -98,4 +98,5 @@ export default function UpdateProducts({ token }) {
                 <p> Updating your product...</p>
             )}
         </div>
-    )};
+    )
+};

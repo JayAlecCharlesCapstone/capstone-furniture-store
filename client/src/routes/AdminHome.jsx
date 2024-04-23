@@ -1,25 +1,24 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 export default function AdminHome({ token, setNewReservedItem }) {
     const [products, setProducts] = useState(null);
 
-    useEffect(() => {
-        async function getProducts() {
-            try {
-                const response = await fetch("http://localhost:3000/api/v1/products");
-                const result = await response.json();
-                console.log(result);
-                setProducts(result.data.products);
-                console.log(result.data.products)
-            } catch (error) {
-                console.error(error);
-            }
+    const getProducts = async () => {
+        try {
+            const response = await fetch("http://localhost:3000/api/v1/products");
+            const result = await response.json();
+            setProducts(result.data.products);
+        } catch (error) {
+            console.error("Error fetching products:", error);
         }
+    };
+
+    useEffect(() => {
         getProducts();
     }, []);
-
-    async function reserveProduct(id) {
+    
+    const reserveProduct = async (id) => {
         try {
             const response = await fetch(`http://localhost:3000/api/v1/products/${id}`, {
                 method: "PATCH",
@@ -32,30 +31,50 @@ export default function AdminHome({ token, setNewReservedItem }) {
                 })
             });
             const result = await response.json();
-            console.log(result);
             setNewReservedItem(result);
         } catch (error) {
-            console.error(error);
+            console.error("Error reserving product:", error);
         }
-    }
+    };
+
+    const removeProduct = async (id) => {
+        try {
+            const response = await fetch(`http://localhost:3000/api/v1/products/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            if (!response.ok) {
+                throw new Error('Failed to delete product');
+            }
+
+            await getProducts();
+        } catch (error) {
+            console.error("Error removing product:", error);
+        }
+    };
 
     return (
-        <div id ="allProducts">
-        <>
-            {products && products.map(products => (
-                <div key={products.product_id} id={products.product_id}>
-                    <p>{products.name}</p>
-                    <p>${products.price}</p>
-                    <p>{products.stock_quantity}</p>
-                    <Link to={`/ProductDetails/${products.product_id}`}>
-                        <button>View Item</button>
-                    </Link>
-                    {token && (
-                        <button onClick={() => reserveProduct(products.product_id)}>Reserve Item</button>
-                    )}
-                </div>
-            ))}
-        </>
+        <div id="allProducts">
+            {products ? (
+                products.map(product => (
+                    <div key={product.product_id} id={product.product_id}>
+                        <p>{product.name}</p>
+                        <p>${product.price}</p>
+                        <p>Stock: {product.stock_quantity}</p>
+                        <Link to={`/ProductDetails/${product.product_id}`}>
+                            <button>View Item</button>
+                        </Link>
+                        {token && (
+                            <button onClick={() => reserveProduct(product.product_id)}>Add Item to Cart</button>
+                        )}
+                        <button onClick={() => removeProduct(product.product_id)}>Remove Product</button>
+                    </div>
+                ))
+            ) : (
+                <p>Loading products...</p>
+            )}
         </div>
     );
 }

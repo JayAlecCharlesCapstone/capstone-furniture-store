@@ -1,9 +1,9 @@
-const {client} = require("./client")
+const { client } = require("./client")
 const bcrypt = require('bcrypt')
-const {createAdminUser, getAllAdminUsers} = require('./admin')
-const {createCustomers,updateCustomers,getAllCustomers,getCustomersById} = require('./customers')
-const {getOrdersByCustomerId} = require('./orders')
-const {createProducts,getAllProducts,updateProduct} = require('./product')
+const { createAdminUser, getAllAdminUsers } = require('./admin')
+const { createCustomers, updateCustomers, getAllCustomers, getCustomersById } = require('./customers')
+const { getOrdersByCustomerId } = require('./orders')
+const { createProducts, getAllProducts, updateProduct } = require('./product')
 
 
 
@@ -109,7 +109,7 @@ async function createTables() {
     }
 }
 
-async function createInitialAdminUser(){
+async function createInitialAdminUser() {
     try {
         console.log("Creating initial admin users....")
         const username = "jjhaymes";
@@ -240,9 +240,9 @@ async function rebuildDb() {
         await createInitialAdminUser();
         await createInitialCustomers();
         await createInitialProducts();
-        
-        
-        return true; 
+
+
+        return true;
     } catch (err) {
         console.error("Error rebuilding database:", err.message);
         throw err;
@@ -260,7 +260,7 @@ async function testDB() {
         console.log("Customers:", customers);
         const products = await getAllProducts();
         console.log("Products:", products)
-        await client.end(); 
+        await client.end();
     } catch (err) {
         console.error("Error testing database:", err.message);
         throw err;
