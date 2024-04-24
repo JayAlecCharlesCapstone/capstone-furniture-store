@@ -164,21 +164,12 @@ router.post("/register", async (req, res) => {
 // PUT update customer details
 router.put("/register/:id", verifyToken, async (req, res) => {
     try {
-        const { name, email, phone, street_address, city, state, country, postal_code } = req.body;
-
-        await client.query('BEGIN');
+        const { name, email, phone, username } = req.body;
 
         const customerResult = await client.query(
-            'UPDATE customers SET name = $1, email = $2, phone = $3 WHERE customer_id = $4 RETURNING *',
-            [name, email, phone, req.params.id]
+            'UPDATE customers SET name = $1, email = $2, phone = $3, username = $4 WHERE customer_id = $5 RETURNING *',
+            [name, email, phone, username, req.params.id]
         );
-
-        const addressResult = await client.query(
-            'UPDATE addresses SET street_address = $1, city = $2, state = $3, country = $4, postal_code = $5 WHERE address_id = $6',
-            [street_address, city, state, country, postal_code, customerResult.rows[0].address_id]
-        );
-
-        await client.query('COMMIT');
 
         res.status(200).json({
             status: "success",
@@ -187,7 +178,6 @@ router.put("/register/:id", verifyToken, async (req, res) => {
             }
         });
     } catch (error) {
-        await client.query('ROLLBACK');
         console.error(error);
         res.status(500).json({
             status: "error",

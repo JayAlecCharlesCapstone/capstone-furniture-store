@@ -23,6 +23,7 @@ const Account = ({ token }) => {
       if (decodedToken) {
         setCustomer({
           name: decodedToken.name,
+          username: decodedToken.username,
           email: decodedToken.email,
           phone: decodedToken.phone,
           customer_id: decodedToken.id,
@@ -135,10 +136,12 @@ const Account = ({ token }) => {
     <div>
       <h2>Account Information</h2>
       {customer ? (
-        <div>
+        <div id='account-info'>
           <p><strong>Name:</strong> {customer.name}</p>
+          <p><strong>Username:</strong> {customer.username}</p>
           <p><strong>Email:</strong> {customer.email}</p>
           <p><strong>Phone:</strong> {customer.phone}</p>
+          <button>Edit Account Information</button>
         </div>
       ) : (
         <p>Loading customer information...</p>
