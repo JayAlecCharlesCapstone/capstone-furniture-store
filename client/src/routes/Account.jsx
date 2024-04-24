@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+import ShippingAddressForm from './ShippingAddress';
 
 const Account = ({ token }) => {
   const [customer, setCustomer] = useState(null);
   const [cart, setCart] = useState([]);
+  const [shippingAddress, setShippingAddress] = useState(null);
 
   const decodeToken = (token) => {
     try {
@@ -23,6 +25,7 @@ const Account = ({ token }) => {
           name: decodedToken.name,
           email: decodedToken.email,
           phone: decodedToken.phone,
+          customer_id: decodedToken.id,
         });
       }
     }
@@ -83,7 +86,50 @@ const Account = ({ token }) => {
     }
   };
 
+  const handleAddressSubmit = async (addressData) => {
+    try {
+      console.log('Shipping address submitted:', addressData);
+      setShippingAddress(addressData);
+      return true;
+    } catch (error) {
+      console.error('Error submitting shipping address:', error);
+      return false;
+    }
+  };
 
+  const handleOrderSubmit = async (shippingAddress) => {
+    try {
+      const addressSubmitted = await handleAddressSubmit(shippingAddress);
+      if (!addressSubmitted) {
+        throw new Error('Please submit a shipping address before placing the order.');
+      }
+
+      const response = await fetch("http://localhost:3000/api/v1/orders", {
+        method: "POST",
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          customer_id: customer.customer_id,
+          shipping_address_id: shippingAddress.address_id
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to create order');
+      }
+
+      const result = await response.json();
+      console.log(result);
+
+      setCart([]);
+      alert('Order placed successfully!');
+    } catch (error) {
+      console.error('Error placing order:', error);
+      alert('Failed to place order. Please try again.');
+    }
+  };
 
   return (
     <div>
@@ -120,6 +166,10 @@ const Account = ({ token }) => {
             <p>No products in cart</p>
           </div>
         )}
+      </div>
+      <div>
+        <h2>Shipping Address</h2>
+        <ShippingAddressForm onSubmit={handleOrderSubmit} />
       </div>
     </div>
   );

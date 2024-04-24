@@ -84,20 +84,49 @@ router.get("/:customerId", async (req, res) => {
 
 
 // GET all customer addresses
-router.get("/address", async (req, res) => {
+router.get("/address/:addressId", async (req, res) => {
+    const { addressId } = req.params;
+
     try {
-        const result = await client.query("SELECT * FROM addresses");
-        console.log(result)
+        const result = await client.query(
+            `SELECT * FROM addresses WHERE address_id = $1`,
+            [addressId] 
+        );
+
         res.json({
             status: "success",
             results: result.rows.length,
             data: {
-                addresses: result.rows
+                address: result.rows[0] 
             }
         });
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Error fetching addresses' });
+        console.error('Error fetching address:', error);
+        res.status(500).json({ message: 'Error fetching address' });
+    }
+});
+
+// POST customer address
+router.post("/address", async (req, res) => {
+    const { street_address, city, state, country, postal_code } = req.body;
+
+    try {
+        const result = await client.query(
+            `INSERT INTO addresses (street_address, city, state, country, postal_code)
+            VALUES ($1, $2, $3, $4, $5)
+            RETURNING *`,
+            [street_address, city, state, country, postal_code]
+        );
+
+        const customerAddress = result.rows[0];
+
+        res.status(201).json({
+            message: 'Customer address registered successfully',
+            address: customerAddress
+        });
+    } catch (error) {
+        console.error('Error inserting address:', error);
+        res.status(500).json({ message: 'Failed to register customer address' });
     }
 });
 
