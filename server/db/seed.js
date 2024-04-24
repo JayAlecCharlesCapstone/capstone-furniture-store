@@ -62,7 +62,8 @@ async function createTables() {
             name VARCHAR(100) NOT NULL,
             description TEXT,
             price DECIMAL(10, 2) NOT NULL,
-            stock_quantity INT NOT NULL
+            stock_quantity INT NOT NULL,
+            image_url VARCHAR(255)
         );
 
         CREATE TABLE Orders (
@@ -200,28 +201,32 @@ async function createInitialProducts() {
             name: 'Office Chair',
             description: 'A seat designed for use in office or workspace',
             price: '49.99',
-            stock_quantity: '30'
+            stock_quantity: '30',
+            image_url:'https://www.nouhaus.com/cdn/shop/products/2_2_800x.png?v=1657245441'
         });
 
         await createProducts({
             name: 'Sofa',
             description: 'A long, comfortable seat with a back and usually with arms, which two or three people can sit on.',
             price: '899.99',
-            stock_quantity: '20'
+            stock_quantity: '20',
+            image_url:'https://images.eq3.com/product-definitions/ckh3u370s7dxy01269b6hyibb/instance/ckwl5fymw000238618kzgyyf2/THUMBNAIL/343bda99-69a5-4898-a62b-45e572250344.jpg'
         });
 
         await createProducts({
             name: 'Dining Table',
             description: 'A table on which meals are served in a dining room',
             price: '499.99',
-            stock_quantity: '42'
+            stock_quantity: '42',
+            image_url:'https://i.etsystatic.com/41227869/r/il/cfa40d/4631176414/il_570xN.4631176414_p4db.jpg'
         });
 
         await createProducts({
             name: 'Office Desk',
             description: 'A piece of furniture that is specifically designed for use in an office setting.',
             price: '79.99',
-            stock_quantity: '47'
+            stock_quantity: '47',
+            image_url:'https://www.nouhaus.com/cdn/shop/products/2_2_800x.png?v=1657245441'
         });
 
         console.log('Initial products created successfully!');
