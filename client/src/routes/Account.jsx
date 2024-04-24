@@ -49,6 +49,16 @@ const Account = ({ token }) => {
     }
   };
 
+  const handleQuantityChange = (cartId, newQuantity) => {
+    setCart(cart.map(item => {
+      if (item.cart_id === cartId) {
+        return { ...item, quantity: newQuantity };
+      }
+      return item;
+    }))
+  }
+
+
   useEffect(() => {
     if (token) {
       fetchCart();
@@ -143,7 +153,13 @@ const Account = ({ token }) => {
               <p><strong>Description:</strong> {item.product_description}</p>
               <p><strong>Price:</strong> ${item.price}</p>
               <button onClick={() => returnProduct(item.cart_id)}>Return Product</button>
+              <div>
+                <button onClick={() => handleQuantityChange(item.cart_id, item.quantity - 1)}> - </button>
+                <span>{item.quantity}</span>
+                <button onClick={() => handleQuantityChange(item.cart_id, item.quantity + 1)}> + </button>
+              </div>
             </div>
+
           ))
         ) : (
           <div>
