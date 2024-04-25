@@ -9,7 +9,7 @@ import Register from './routes/Register';
 import AdminHome from './routes/AdminHome';
 import AdminNavbar from './routes/AdminNavbar';
 import AddProduct from './routes/AddProduct';
-import AdminViewCustomers from './routes/AdminViewCustomers'
+import UpdateCustomer from './routes/UpdateCustomer';
 
 function App() {
     const [token, setToken] = useState(null);
@@ -17,20 +17,18 @@ function App() {
     const [isAdmin, setIsAdmin] = useState(false);
     const navigate = useNavigate();
 
-   useEffect(() => {
-    const savedToken = localStorage.getItem('token');
-    const savedIsAdmin = localStorage.getItem('isAdmin');
-
-    if (savedToken) {
-        setToken(savedToken);
-    }
-
-    if (savedIsAdmin === 'true') {
-        setIsAdmin(true);
-    } else {
-        setIsAdmin(false); 
-    }
-}, []);
+    useEffect(() => {
+        const savedToken = localStorage.getItem('token');
+        const savedIsAdmin = localStorage.getItem('isAdmin');
+        if (savedToken) {
+            setToken(savedToken);
+        }
+        if (savedIsAdmin === 'true') {
+            setIsAdmin(true);
+        } else {
+            setIsAdmin(false);
+        }
+    }, []);
 
     const logOut = () => {
         localStorage.removeItem('token');
@@ -39,29 +37,26 @@ function App() {
         setIsAdmin(false);
         navigate('/Login');
     };
-    
-
-
 
     return (
         <>
-          {isAdmin ? (
-            <AdminNavbar token={token} logOut={logOut} isAdmin={isAdmin} />
-          ) : (
-            <Navbar token={token} logOut={logOut} />
-          )}
-          <Routes>
-            <Route path="/Account" element={<Account token={token} newCart={newCart} />} />
-            <Route path="/Home" element={<Home token={token} newCart={newCart} />} />
-            <Route path="/AdminHome" element={<AdminHome token={token} newCart={newCart} isAdmin={isAdmin} />} />
-            <Route path="/Login" element={<Login setToken={setToken} isAdmin={isAdmin} logOut={logOut} setIsAdmin={setIsAdmin} />} />
-            <Route path="/Register" element={<Register />} />
-            <Route path="/AddProduct" element={<AddProduct token={token} />} />
-            <Route path="/AdminViewCustomers" element={<AdminViewCustomers token={token} />} />
-            <Route path="/ProductDetails/:productId" element={<ProductDetails token={token} />} />
-          </Routes>
+            {isAdmin ? (
+                <AdminNavbar token={token} logOut={logOut} isAdmin={isAdmin} />
+            ) : (
+                <Navbar token={token} logOut={logOut} />
+            )}
+            <Routes>
+                <Route path="/Account" element={<Account token={token} newCart={newCart} />} />
+                <Route path="/Home" element={<Home token={token} newCart={newCart} />} />
+                <Route path="/AdminHome" element={<AdminHome token={token} newCart={newCart} isAdmin={isAdmin} />} />
+                <Route path="/Login" element={<Login setToken={setToken} isAdmin={isAdmin} logOut={logOut} setIsAdmin={setIsAdmin} />} />
+                <Route path="/Register" element={<Register />} />
+                <Route path="/AddProduct" element={<AddProduct token={token} />} />
+                <Route path="/ProductDetails/:productId" element={<ProductDetails token={token} />} />
+                <Route path="/UpdateCustomer/:customerId" element={<UpdateCustomer token={token} />} />
+            </Routes>
         </>
-      );
-    }
+    );
+}
 
 export default App;
