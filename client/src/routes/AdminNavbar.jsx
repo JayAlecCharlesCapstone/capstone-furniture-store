@@ -19,6 +19,9 @@ const AdminNavbar = ({ token, logOut }) => {
       <Link className="nav-link" to="/AddProduct">
         Add Product
       </Link>
+      <Link className="nav-link" to="/AdminViewCustomers">
+        View All Customer
+      </Link>
     </div>
   );
 };

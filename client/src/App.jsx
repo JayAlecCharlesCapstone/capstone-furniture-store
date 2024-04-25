@@ -9,6 +9,7 @@ import Register from './routes/Register';
 import AdminHome from './routes/AdminHome';
 import AdminNavbar from './routes/AdminNavbar';
 import AddProduct from './routes/AddProduct';
+import AdminViewCustomers from './routes/AdminViewCustomers'
 
 function App() {
     const [token, setToken] = useState(null);
@@ -56,6 +57,7 @@ function App() {
             <Route path="/Login" element={<Login setToken={setToken} isAdmin={isAdmin} logOut={logOut} setIsAdmin={setIsAdmin} />} />
             <Route path="/Register" element={<Register />} />
             <Route path="/AddProduct" element={<AddProduct token={token} />} />
+            <Route path="/AdminViewCustomers" element={<AdminViewCustomers token={token} />} />
             <Route path="/ProductDetails/:productId" element={<ProductDetails token={token} />} />
           </Routes>
         </>
