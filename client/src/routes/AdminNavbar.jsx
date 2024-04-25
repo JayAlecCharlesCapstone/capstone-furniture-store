@@ -16,12 +16,6 @@ const AdminNavbar = ({ token, logOut }) => {
       <Link className="nav-link" to="/AdminHome">
         Home
       </Link>
-      <Link className="nav-link" to="/Register">
-        Register
-      </Link>
-      <Link className="nav-link" to="/Account">
-        Cart
-      </Link>
       <Link className="nav-link" to="/AddProduct">
         Add Product
       </Link>
