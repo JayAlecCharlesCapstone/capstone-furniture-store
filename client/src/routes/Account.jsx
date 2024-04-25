@@ -4,7 +4,6 @@ import ShippingAddressForm from './ShippingAddress';
 const Account = ({ token }) => {
   const [customer, setCustomer] = useState(null);
   const [cart, setCart] = useState([]);
-  console.log(customer)
   const decodeToken = (token) => {
     try {
       const decoded = JSON.parse(atob(token.split('.')[1]));

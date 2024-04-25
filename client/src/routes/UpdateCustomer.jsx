@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import Account from './Account';
 
 const UpdateCustomer = ({ token }) => {
     const { customerId } = useParams();
@@ -10,7 +9,7 @@ const UpdateCustomer = ({ token }) => {
     const [phone, setPhone] = useState('');
     const [error, setError] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
-
+    
 
     useEffect(() => {
         const fetchCustomerDetails = async () => {
@@ -47,18 +46,18 @@ const UpdateCustomer = ({ token }) => {
                 },
                 body: JSON.stringify(updatedCustomer),
             });
-            const responseData = await response.json();
             if (!response.ok) {
-                throw new Error(`Failed to update customer information: ${responseData.message}`);
+                const errorMessage = await response.json();
+                throw new Error(`Failed to update customer information: ${errorMessage.message}`);
             }
             alert('Customer information updated successfully!');
+        
         } catch (error) {
             console.error('Error updating customer information:', error.message);
-            setError('Failed to update customer information. Please try again.');
+            setError('Failed to update customer information');
         }
         setIsLoading(false);
     };
-
 
     if (isLoading) {
         return <p>Loading...</p>;
@@ -72,11 +71,10 @@ const UpdateCustomer = ({ token }) => {
                 <input
                     type="text"
                     name="name"
-                    value={name || ''}
+                    value={name}
                     onChange={(e) => setName(e.target.value)}
                     required
                 />
-
                 <label>Username:</label>
                 <input
                     type="text"
@@ -101,8 +99,8 @@ const UpdateCustomer = ({ token }) => {
                     onChange={(e) => setPhone(e.target.value)}
                     required
                 />
-                {error && <p>{error}</p>}
-                {/* <button type="submit" onClick={handleCustomerUpdate()}>Update</button> */}
+                {error && <p style={{ color: 'red' }}>{error}</p>}
+                <button type="submit">Update</button>
             </form>
         </div>
     );
