@@ -102,7 +102,7 @@ const UpdateCustomer = ({ token }) => {
                     required
                 />
                 {error && <p>{error}</p>}
-                <button type="submit" onClick={handleCustomerUpdate()}>Update</button>
+                {/* <button type="submit" onClick={handleCustomerUpdate()}>Update</button> */}
             </form>
         </div>
     );
