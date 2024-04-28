@@ -45,7 +45,7 @@ export default function ProductDetails({ token, addToCart }) {
       {products ? (
         <>
           <h2>{products.name}</h2>
-          <img class="homeFurniture" src={products.image_url} alt={products.name} /> {/*Displaying the products*/}
+          <img className="homeFurniture" src={products.image_url} alt={products.name} style={{ width: '200px', height: 'auto' }} /> {/*Displaying the products*/}
           <p>Description: {products.description}</p>
           <p>Price: ${products.price}</p>
           {token && (
