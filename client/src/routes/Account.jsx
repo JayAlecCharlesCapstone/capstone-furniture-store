@@ -27,6 +27,7 @@ const Account = ({ token }) => {
           email: decodedToken.email,
           phone: decodedToken.phone,
           customer_id: decodedToken.id,
+          username: decodedToken.username
         });
       }
     }
@@ -141,6 +142,7 @@ const Account = ({ token }) => {
             <p><strong>Name:</strong> {customer.name}</p>
             <p><strong>Email:</strong> {customer.email}</p>
             <p><strong>Phone:</strong> {customer.phone}</p>
+            <p><strong>Username:</strong> {customer.username}</p>
           </div>
         ) : (
           <p>Loading customer information...</p>
