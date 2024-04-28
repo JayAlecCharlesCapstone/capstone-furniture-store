@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 
 
-const Home = ({ token, setNewReservedItem }) => {
+const Home = ({ token, setNewReservedItem, addToCart }) => {
     const [products, setProducts] = useState(null);
     const { productId } = useParams();
 
@@ -19,25 +19,6 @@ const Home = ({ token, setNewReservedItem }) => {
         getProducts();
     }, []);
 
-    async function addToCart(productId) {
-        try {
-            const response = await fetch(`http://localhost:3000/api/v1/cart`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`
-                },
-                body: JSON.stringify({
-                    product_id: productId,
-                    quantity: 1
-                })
-            });
-            const result = await response.json();
-            alert('Product added to cart!');
-        } catch (error) {
-            console.error("Error adding item to cart:", error);
-        }
-    }
 
     return (
         <div id="allProducts" className="product-container">
