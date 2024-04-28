@@ -73,10 +73,10 @@ router.get('/:productId', async (req, res) => {
 // POST /api/v1/products
 router.post('/', verifyAdminToken, async (req, res) => {
     try {
-        const { name, description, price, stock_quantity } = req.body;
+        const { name, description, price, stock_quantity, image_url } = req.body;
         const result = await client.query(
-            'INSERT INTO products (name, description, price, stock_quantity) VALUES ($1, $2, $3, $4) RETURNING *',
-            [name, description, price, stock_quantity]
+            'INSERT INTO products (name, description, price, stock_quantity, image_url) VALUES ($1, $2, $3, $4, $5) RETURNING *',
+            [name, description, price, stock_quantity, image_url]
         );
 
         res.status(201).json({
