@@ -41,6 +41,26 @@ function App() {
     };
     
 
+    async function addToCart(productId) {
+      try {
+          const response = await fetch(`http://localhost:3000/api/v1/cart`, {
+              method: "POST",
+              headers: {
+                  "Content-Type": "application/json",
+                  "Authorization": `Bearer ${token}`
+              },
+              body: JSON.stringify({
+                  product_id: productId,
+                  quantity: 1
+              })
+          });
+          const result = await response.json();
+          alert('Product added to cart!');
+      } catch (error) {
+          console.error("Error adding item to cart:", error);
+      }
+  }
+
 
 
     return (
@@ -52,13 +72,13 @@ function App() {
           )}
           <Routes>
             <Route path="/Account" element={<Account token={token} newCart={newCart} />} />
-            <Route path="/Home" element={<Home token={token} newCart={newCart} />} />
+            <Route path="/Home" element={<Home token={token} newCart={newCart} addToCart={addToCart} />} />
             <Route path="/AdminHome" element={<AdminHome token={token} newCart={newCart} isAdmin={isAdmin} />} />
             <Route path="/Login" element={<Login setToken={setToken} isAdmin={isAdmin} logOut={logOut} setIsAdmin={setIsAdmin} />} />
             <Route path="/Register" element={<Register />} />
             <Route path="/AddProduct" element={<AddProduct token={token} />} />
             <Route path="/AdminViewCustomers" element={<AdminViewCustomers token={token} />} />
-            <Route path="/ProductDetails/:productId" element={<ProductDetails token={token} />} />
+            <Route path="/ProductDetails/:productId" element={<ProductDetails token={token} addToCart={addToCart} />} />
           </Routes>
         </>
       );
