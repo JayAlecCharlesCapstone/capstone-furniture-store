@@ -42,7 +42,7 @@ function AddProduct({ token }) {
 
     return (
         <div>
-            <h2>Add New Product</h2>
+            <h2 className="add-product-header">Add New Product</h2>
             <form onSubmit={handleSubmit}>
                 <label>Name:</label>
                 <input
@@ -76,7 +76,7 @@ function AddProduct({ token }) {
                     required
                 />
 
-                <button type="submit">Add Product</button>
+                <button className='addProductButton' type="submit">Add Product</button>
             </form>
         </div>
     );

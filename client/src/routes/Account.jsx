@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import ShippingAddressForm from './ShippingAddress';
 
+
 const Account = ({ token }) => {
   const [customer, setCustomer] = useState(null);
   const [cart, setCart] = useState([]);
@@ -136,7 +137,7 @@ const Account = ({ token }) => {
       <div className="account-info">
         <h2 className="account-heading">Account Information</h2>
         {customer ? (
-          <div>
+          <div className="customer-details">
             <p><strong>Name:</strong> {customer.name}</p>
             <p><strong>Email:</strong> {customer.email}</p>
             <p><strong>Phone:</strong> {customer.phone}</p>

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
+
 export default function AdminHome({ token, setNewReservedItem }) {
     const [products, setProducts] = useState(null);
 
@@ -56,25 +57,28 @@ export default function AdminHome({ token, setNewReservedItem }) {
     };
 
     return (
-        <div id="allProducts">
-            {products ? (
-                products.map(product => (
-                    <div key={product.product_id} id={product.product_id}>
-                        <p>{product.name}</p>
-                        <p>${product.price}</p>
-                        <p>Stock: {product.stock_quantity}</p>
-                        <Link to={`/ProductDetails/${product.product_id}`}>
-                            <button>View Item</button>
-                        </Link>
-                        {token && (
-                            <button onClick={() => reserveProduct(product.product_id)}>Add Item to Cart</button>
-                        )}
-                        <button onClick={() => removeProduct(product.product_id)}>Remove Product</button>
-                    </div>
-                ))
-            ) : (
-                <p>Loading products...</p>
-            )}
+        <div className="admin-home-container">
+            <h2 className="adminHomeHeader">All Products</h2>
+            <div className="product-list">
+                {products ? (
+                    products.map(product => (
+                        <div key={product.product_id} className="product-item">
+                            <p className="product-name">{product.name}</p>
+                            <img className="product-image" src={product.image_url} alt={product.name} />
+                            <p className="product-price">${product.price}</p>
+                            <p className="product-stock">Stock: {product.stock_quantity}</p>
+                            <div className="product-actions">
+                                <Link to={`/ProductDetails/${product.product_id}`}>
+                                    <button className="view-btn">View Item</button>
+                                </Link>
+                                <button className="remove-btn" onClick={() => removeProduct(product.product_id)}>Remove</button>
+                            </div>
+                        </div>
+                    ))
+                ) : (
+                    <p>Loading products...</p>
+                )}
+            </div>
         </div>
     );
 }

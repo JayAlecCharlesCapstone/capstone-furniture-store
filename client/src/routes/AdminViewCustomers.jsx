@@ -24,12 +24,12 @@ export default function AdminViewCustomers() {
 
     return (
         <div>
-            <h2>All Customers</h2>
-            <ul>
+            <h2 className="allCustomerHeader">All Customers</h2>
+            <ul className="customer-list">
                 {customers.map((customer) => (
-                    <li key={customer.customer_id}>
-                        <Link to={`/customer/${customer.customer_id}`}>
-                            <div>
+                    <li key={customer.customer_id} className="customer-list-item">
+                        <Link to={`/customer/${customer.customer_id}`} className="customer-link">
+                            <div className="customer-details">
                                 <p><strong>Name:</strong> {customer.name}</p>
                                 <p><strong>Username:</strong> {customer.username}</p>
                                 <p><strong>Email:</strong> {customer.email}</p>

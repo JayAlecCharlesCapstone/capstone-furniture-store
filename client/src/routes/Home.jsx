@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 
+
 const Home = ({ token, setNewReservedItem }) => {
     const [products, setProducts] = useState(null);
     const { productId } = useParams();
@@ -39,19 +40,19 @@ const Home = ({ token, setNewReservedItem }) => {
     }
 
     return (
-        <div id="allProducts">
+        <div id="allProducts" className="product-container">
             {products ? (
                 products.map(product => (
-                    <div key={product.product_id} id={product.product_id}>
-                        <p>{product.name}</p>
-                        <img className="homeFurniture" src={product.image_url} alt={product.name} />
-                        <p>${product.price}</p>
-                        <p>{product.stock_quantity}</p>
+                    <div key={product.product_id} className="product-item">
+                        <p className="product-name">{product.name}</p>
+                        <img className="product-image" src={product.image_url} alt={product.name} />
+                        <p className="product-price">${product.price}</p>
+                        <p className="product-stock">Stock: {product.stock_quantity}</p>
                         <Link to={`/ProductDetails/${product.product_id}`}>
-                            <button>View Item</button>
+                            <button className="view-item-btn">View Item</button>
                         </Link>
                         {token && (
-                            <button onClick={() => addToCart(product.product_id)}>Add to cart</button>
+                            <button className="add-to-cart-btn" onClick={() => addToCart(product.product_id)}>Add to cart</button>
                         )}
                     </div>
                 ))
