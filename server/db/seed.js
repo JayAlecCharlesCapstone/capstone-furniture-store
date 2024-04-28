@@ -63,7 +63,7 @@ async function createTables() {
             description TEXT,
             price DECIMAL(10, 2) NOT NULL,
             stock_quantity INT NOT NULL,
-            image_url VARCHAR(255)
+            image_url VARCHAR(500)
         );
 
         CREATE TABLE Orders (
@@ -226,7 +226,7 @@ async function createInitialProducts() {
             description: 'A piece of furniture that is specifically designed for use in an office setting.',
             price: '79.99',
             stock_quantity: '47',
-            image_url:'https://www.nouhaus.com/cdn/shop/products/2_2_800x.png?v=1657245441'
+            image_url:'https://i5.walmartimages.com/seo/FEZIBO-55-x-24-Inch-Height-Adjustable-Electric-Standing-Desk-Double-Drawer-Stand-Up-Table-Storage-Shelf-Sit-Splice-Board-Black-Frame-Rustic-Brown-Top_602db03a-fc2e-4dee-86f4-1c629a0c573c.bff23421c44d54bcd6888497d2f65e85.jpeg?odnHeight=640&odnWidth=640&odnBg=FFFFFF'
         });
 
         console.log('Initial products created successfully!');

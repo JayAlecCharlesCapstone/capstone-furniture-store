@@ -44,6 +44,7 @@ const Home = ({ token, setNewReservedItem }) => {
                 products.map(product => (
                     <div key={product.product_id} id={product.product_id}>
                         <p>{product.name}</p>
+                        <img className="homeFurniture" src={product.image_url} alt={product.name} />
                         <p>${product.price}</p>
                         <p>{product.stock_quantity}</p>
                         <Link to={`/ProductDetails/${product.product_id}`}>
