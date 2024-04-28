@@ -63,7 +63,7 @@ async function createTables() {
             description TEXT,
             price DECIMAL(10, 2) NOT NULL,
             stock_quantity INT NOT NULL,
-            image_url VARCHAR(255)
+            image_url VARCHAR(500)
         );
 
         CREATE TABLE Orders (
