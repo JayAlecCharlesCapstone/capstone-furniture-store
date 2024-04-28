@@ -1,93 +1,113 @@
+/* styles.css */
 
-.admin-navbar, #navbar{
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 10px;
-    background-color: #f0f0f0;
-    border-bottom: 1px solid #ccc;
-  }
-  
-  .nav-link {
-    text-decoration: none;
-    color: #333;
-    margin: 0 10px;
-    padding: 5px 10px;
-    border-radius: 5px;
-    background-color: #ddd;
-  }
-  
-  .logout-btn, .login-link  {
-    text-decoration: none;
-    color: #fff;
-    margin: 0 10px;
-    padding: 5px 10px;
-    border-radius: 5px;
-    background-color: blue;
-    cursor: pointer;
-  }
-  
-  #allProducts {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-around;
-    margin: 20px;
-}
-
-#allProducts > div {
-    width: 300px;
-    padding: 20px;
-    margin-bottom: 20px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    text-align: center;
-}
-
-#allProducts p {
-    margin: 10px 0;
-}
-
-
-#registrationForm {
-  max-width: 500px;
+/* Form styles */
+form {
+  margin-bottom: 20px;
+  max-width: 400px;
   margin: 0 auto;
   padding: 20px;
-  margin-top: 60px;
   border: 1px solid #ccc;
-  border-radius: 5px;
+  border-radius: 4px;
   background-color: #f9f9f9;
-  display: flex;
-  flex-direction: column;
 }
 
-#registrationForm > label {
+label {
+  display: block;
+  margin-bottom: 5px;
   font-weight: bold;
 }
 
-#registrationForm > input {
+input[type="text"],
+input[type="password"],
+input[type="email"],
+textarea {
   width: 100%;
   padding: 8px;
-  margin-bottom: 15px;
-  box-sizing: border-box;
+  margin-bottom: 10px;
   border: 1px solid #ccc;
   border-radius: 4px;
 }
 
-#registrationForm > button {
-  background-color: #4CAF50;
+input[type="submit"],
+button {
+  background-color: #337ab7;
   color: white;
-  padding: 10px 20px;
   border: none;
-  border-radius: 4px;
+  padding: 10px 20px;
   cursor: pointer;
+  border-radius: 4px;
 }
 
-#registrationForm > button:disabled {
-  background-color: #cccccc;
+button:disabled {
+  background-color: #ccc;
   cursor: not-allowed;
 }
 
-#registrationForm > .error {
+.error-message {
   color: red;
-  margin-bottom: 15px;
+}
+
+.success-message {
+  color: green;
+}
+
+/* Login and Register Form styles */
+.login-form,
+.register-form {
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #f9f9f9;
+}
+
+.login-form h2,
+.register-form h2 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.login-form label,
+.register-form label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.login-form input,
+.register-form input,
+.login-form button,
+.register-form button {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.login-form button,
+.register-form button {
+  background-color: #337ab7;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.login-form button:disabled,
+.register-form button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.login-form .error-message,
+.register-form .error-message {
+  color: red;
+  margin-bottom: 10px;
+}
+
+.login-form .success-message,
+.register-form .success-message {
+  color: green;
+  margin-bottom: 10px;
 }

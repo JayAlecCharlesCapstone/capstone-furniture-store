@@ -132,44 +132,48 @@ const Account = ({ token }) => {
   };
 
   return (
-    <div>
-      <h2>Account Information</h2>
-      {customer ? (
-        <div>
-          <p><strong>Name:</strong> {customer.name}</p>
-          <p><strong>Email:</strong> {customer.email}</p>
-          <p><strong>Phone:</strong> {customer.phone}</p>
-        </div>
-      ) : (
-        <p>Loading customer information...</p>
-      )}
-
-      <div className='cart'>
-        <h2>Cart:</h2>
-        {cart && cart.length > 0 ? (
-          cart.map(item => (
-            <div key={item.cart_id}>
-              <p><strong>Product Name:</strong> {item.product_name}</p>
-              <p><strong>Description:</strong> {item.product_description}</p>
-              <p><strong>Price:</strong> ${item.price}</p>
-              <button onClick={() => returnProduct(item.cart_id)}>Return Product</button>
-              <div>
-                <button onClick={() => handleQuantityChange(item.cart_id, item.quantity - 1)}> - </button>
-                <span>{item.quantity}</span>
-                <button onClick={() => handleQuantityChange(item.cart_id, item.quantity + 1)}> + </button>
-              </div>
-            </div>
-
-          ))
-        ) : (
+    <div className="account-container">
+      <div className="account-info">
+        <h2 className="account-heading">Account Information</h2>
+        {customer ? (
           <div>
-            <p>No products in cart</p>
+            <p><strong>Name:</strong> {customer.name}</p>
+            <p><strong>Email:</strong> {customer.email}</p>
+            <p><strong>Phone:</strong> {customer.phone}</p>
           </div>
+        ) : (
+          <p>Loading customer information...</p>
         )}
       </div>
-      <div>
-        <h2>Shipping Address</h2>
-        <ShippingAddressForm onSubmit={handleOrderSubmit} />
+
+      <div className="cart-and-shipping">
+        <div className='cart'>
+          <h2>Cart:</h2>
+          {cart && cart.length > 0 ? (
+            cart.map(item => (
+              <div key={item.cart_id} className="cart-item">
+                <p><strong>Product Name:</strong> {item.product_name}</p>
+                <p><strong>Description:</strong> {item.product_description}</p>
+                <p><strong>Price:</strong> ${item.price}</p>
+                <button onClick={() => returnProduct(item.cart_id)}>Return Product</button>
+                <div className="quantity-control">
+                  <button onClick={() => handleQuantityChange(item.cart_id, item.quantity - 1)}> - </button>
+                  <span>{item.quantity}</span>
+                  <button onClick={() => handleQuantityChange(item.cart_id, item.quantity + 1)}> + </button>
+                </div>
+              </div>
+            ))
+          ) : (
+            <div>
+              <p>No products in cart</p>
+            </div>
+          )}
+        </div>
+
+        <div className="shipping-address">
+          <h2>Shipping Address</h2>
+          <ShippingAddressForm onSubmit={handleOrderSubmit} />
+        </div>
       </div>
     </div>
   );

@@ -27,61 +27,62 @@ const ShippingAddressForm = ({ onSubmit }) => {
 
   return (
     <form id="shipping_form" onSubmit={handleSubmit}>
-      <label>
-        Address Line:
-        <input
-          type="text"
-          name="street_address"
-          value={address.street_address}
-          onChange={handleChange}
-          required
-        />
-      </label>
-
-      <label>
-        City:
-        <input
-          type="text"
-          name="city"
-          value={address.city}
-          onChange={handleChange}
-          required
-        />
-      </label>
-
-      <label>
-        State:
-        <input
-          type="text"
-          name="state"
-          value={address.state}
-          onChange={handleChange}
-          required
-        />
-      </label>
-
-      <label>
-        Country:
-        <input
-          type="text"
-          name="country"
-          value={address.country}
-          onChange={handleChange}
-          required
-        />
-      </label>
-
-      <label>
-        Postal Code:
-        <input
-          type="text"
-          name="postal_code"
-          value={address.postal_code}
-          onChange={handleChange}
-          required
-        />
-      </label>
-
+      <div className="form-row">
+        <label>
+          Address Line:
+          <input
+            type="text"
+            name="street_address"
+            value={address.street_address}
+            onChange={handleChange}
+            required
+          />
+        </label>
+        <label>
+          City:
+          <input
+            type="text"
+            name="city"
+            value={address.city}
+            onChange={handleChange}
+            required
+          />
+        </label>
+      </div>
+      <div className="form-row">
+        <label>
+          State:
+          <input
+            type="text"
+            name="state"
+            value={address.state}
+            onChange={handleChange}
+            required
+          />
+        </label>
+        <label>
+          Country:
+          <input
+            type="text"
+            name="country"
+            value={address.country}
+            onChange={handleChange}
+            required
+          />
+        </label>
+      </div>
+      <div className="form-row">
+        <label>
+          Postal Code:
+          <input
+            type="text"
+            name="postal_code"
+            value={address.postal_code}
+            onChange={handleChange}
+            required
+          />
+        </label>
+      </div>
       <button type="submit">Submit Order</button>
     </form>
   );
