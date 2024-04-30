@@ -10,10 +10,10 @@
     "npm-run-all": "^4.1.5"
   },
   "scripts": {
-    "start": "npm-run-all seed start:server start:client",
+    "start": "npm-run-all --parallel seed start:server",
     "seed": "npm-run-all seed:server",
-    "seed:server": "node db/seed.js",
-    "start:server": "cd server && npm run start",
-    "start:client": "cd client && npm run start"
+    "seed:server": "node server/db/seed.js",
+    "start:server": "cd server && npm start",
+    "start:client": "cd client && npm start"
   }
 }
