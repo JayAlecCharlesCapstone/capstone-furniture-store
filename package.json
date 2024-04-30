@@ -9,8 +9,6 @@
   "scripts": {
     "start": "npm-run-all seed start:server",
     "seed": "npm-run-all seed:server",
-    "seed:client": "cd client && npm run seed",
-    "seed:server": "cd server && npm run seed",
     "start:server": "cd server && npm start"
   }
   
