@@ -12,6 +12,7 @@
   "scripts": {
     "start": "npm-run-all seed start:server",
     "seed": "npm-run-all seed:server",
-    "start:server": "cd server && npm start"
+    "start:server": "cd server && npm run start",
+    "start:client": "cd client && npm run start"
   }
 }
