@@ -68,9 +68,6 @@ export default function AdminHome({ token, setNewReservedItem }) {
                             <p className="product-price">${product.price}</p>
                             <p className="product-stock">Stock: {product.stock_quantity}</p>
                             <div className="product-actions">
-                                <Link to={`/ProductDetails/${product.product_id}`}>
-                                    <button className="view-btn">View Item</button>
-                                </Link>
                                 <button className="remove-btn" onClick={() => removeProduct(product.product_id)}>Remove</button>
                             </div>
                         </div>

@@ -260,6 +260,7 @@ button:disabled {
 .product-actions {
   display: flex;
   justify-content: space-between;
+  text-align: center; 
 }
 
 .view-btn,
@@ -284,6 +285,8 @@ button:disabled {
 .remove-btn {
   background-color: #dc3545;
   color: #fff;
+  text-align: center;
+  display: inline-block;
 }
 
 .admin-navbar, .navbar {

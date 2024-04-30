@@ -16,13 +16,14 @@ const Navbar = ({ token, logOut }) => {
       <Link className="nav-link" to="/Home">
         Home
       </Link>
-      <Link className="nav-link" to="/Register">
-        Register
-      </Link>
+      {!token && (
+        <Link className="nav-link" to="/Register">
+          Register
+        </Link>
+      )}
       <Link className="nav-link" to="/Account">
         Cart
       </Link>
-
     </div>
   );
 };

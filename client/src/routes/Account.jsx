@@ -145,7 +145,7 @@ const Account = ({ token }) => {
             <p><strong>Username:</strong> {customer.username}</p>
           </div>
         ) : (
-          <p>Loading customer information...</p>
+          <p>Please Login or Register!</p>
         )}
       </div>
 
