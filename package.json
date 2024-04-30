@@ -1,4 +1,7 @@
 {
+  "name": "full-stack-app",
+  "version": "1.0.0",
+  "description": "Full stack application",
   "dependencies": {
     "jwt-decode": "^4.0.0"
   },
@@ -11,7 +14,4 @@
     "seed": "npm-run-all seed:server",
     "start:server": "cd server && npm start"
   }
-  
 }
-
-
