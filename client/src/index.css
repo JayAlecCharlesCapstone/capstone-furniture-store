@@ -442,3 +442,11 @@ button:disabled {
 .quantity-control button:hover {
   background-color: #0056b3;
 }
+
+
+#jac-nav-image {
+  width: 70px; 
+  height: auto; 
+  border-radius: 5px;
+  border: 1px solid white;
+}
