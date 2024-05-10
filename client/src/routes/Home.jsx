@@ -21,6 +21,8 @@ const Home = ({ token, setNewReservedItem, addToCart }) => {
 
 
     return (
+        <div id="home-container"> 
+             <h2 className='home-header'>All Products</h2>
         <div id="allProducts" className="product-container">
             {products ? (
                 products.map(product => (
@@ -40,6 +42,7 @@ const Home = ({ token, setNewReservedItem, addToCart }) => {
             ) : (
                 <p>Loading products...</p>
             )}
+        </div>
         </div>
     );
 };

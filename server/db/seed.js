@@ -202,7 +202,7 @@ async function createInitialProducts() {
             description: 'A seat designed for use in office or workspace',
             price: '49.99',
             stock_quantity: '30',
-            image_url:'https://www.nouhaus.com/cdn/shop/products/2_2_800x.png?v=1657245441'
+            image_url:'https://images.thdstatic.com/productImages/2d38eedb-521b-408c-8834-d76ada5546e4/svn/black-boss-office-products-executive-chairs-b8551-bk-64_1000.jpg'
         });
 
         await createProducts({
@@ -228,6 +228,144 @@ async function createInitialProducts() {
             stock_quantity: '47',
             image_url:'https://i5.walmartimages.com/seo/FEZIBO-55-x-24-Inch-Height-Adjustable-Electric-Standing-Desk-Double-Drawer-Stand-Up-Table-Storage-Shelf-Sit-Splice-Board-Black-Frame-Rustic-Brown-Top_602db03a-fc2e-4dee-86f4-1c629a0c573c.bff23421c44d54bcd6888497d2f65e85.jpeg?odnHeight=640&odnWidth=640&odnBg=FFFFFF'
         });
+
+        await createProducts({
+            name: 'Coffee Table',
+            description: 'A low table typically placed in front of a sofa, used for drinks, books, and other items.',
+            price: '149.99',
+            stock_quantity: '25',
+            image_url: 'https://m.media-amazon.com/images/I/71eV6jJsMXL._AC_UF894,1000_QL80_.jpg'
+        });
+        
+        await createProducts({
+            name: 'Bookshelf',
+            description: 'A piece of furniture with horizontal shelves, often in a cabinet, used to store books or other printed materials.',
+            price: '199.99',
+            stock_quantity: '35',
+            image_url: 'https://assets.wfcdn.com/im/75410954/compr-r85/2021/202124290/bamboo-modern-bookcase-open-bookshelf-books-display-shelf-for-home.jpg'
+        });
+        
+        await createProducts({
+            name: 'TV Stand',
+            description: 'A low cabinet or table on which a television is placed.',
+            price: '129.99',
+            stock_quantity: '30',
+            image_url: 'https://i5.walmartimages.com/seo/HNEBC-LED-TV-Stand-USB-Wireless-Charging-Station-Television-Stands-Auto-Induction-Adjustable-Lights-TV-75-inch-Storage-Cabinet-Suitable-Living-Room-B_73413fad-88f9-4cc4-9ec7-6ccdfa8fff38.831600aef5bb5a063a7aa3634ce438ab.jpeg?odnHeight=768&odnWidth=768&odnBg=FFFFFF'
+        });
+        
+        await createProducts({
+            name: 'Bed Frame',
+            description: 'A structure that supports and elevates a mattress.',
+            price: '299.99',
+            stock_quantity: '20',
+            image_url: 'https://images-us-prod.cms.dynamics365commerce.ms/cms/api/cncgmclkfv/imageFileData/search?fileName=/Products/144007P_000_001.png'
+        });
+        
+        await createProducts({
+            name: 'Dresser',
+            description: 'A piece of furniture with drawers, used typically for storing clothing.',
+            price: '249.99',
+            stock_quantity: '15',
+            image_url: 'https://i5.walmartimages.com/seo/Better-Homes-Gardens-Modern-Farmhouse-6-Drawer-Dresser-Rustic-White-Finish_67aed562-4498-4f42-80e8-17b77f276860.4a5560054b1dd3ad1ee0a2463bc53744.jpeg?odnHeight=768&odnWidth=768&odnBg=FFFFFF'
+        });
+        
+        await createProducts({
+            name: 'Nightstand',
+            description: 'A small table or cabinet intended to stand beside a bed.',
+            price: '79.99',
+            stock_quantity: '25',
+            image_url: 'https://i5.walmartimages.com/seo/Mainstays-Hillside-Nightstand-with-Drawer-Espresso-Finish_4ef38d92-c065-46f3-9295-2794a3981ea9.3485c7f5e08e1efcb7ee0f8575d9cd3c.jpeg'
+        });
+        
+        await createProducts({
+            name: 'Recliner Chair',
+            description: 'An armchair with a backrest that can be tilted back, and often a footrest that may be extended by means of a lever on the side of the chair.',
+            price: '399.99',
+            stock_quantity: '10',
+            image_url: 'https://assets.wfcdn.com/im/15107791/resize-h755-w755%5Ecompr-r85/2279/227953864/Daquez+38.19%22+Wide+Manual+Swivel+Rocker+Recliner+Chair+with+Massager+and+Heat.jpg'
+        });
+        
+        await createProducts({
+            name: 'Bar Stool',
+            description: 'A tall seat for one person, with no arms or back, often found at a bar or high table.',
+            price: '59.99',
+            stock_quantity: '40',
+            image_url: 'https://m.media-amazon.com/images/I/81YY4i49+JL.jpg'
+        });
+        
+        await createProducts({
+            name: 'Desk Chair',
+            description: 'A chair specifically designed for use with a desk, typically featuring adjustable height and swivel functionality.',
+            price: '129.99',
+            stock_quantity: '20',
+            image_url: 'https://mobileimages.lowes.com/productimages/f3b49f08-3d4c-43c5-90d1-4ba08c2d3db1/15797895.jpg'
+        });
+        
+        await createProducts({
+            name: 'Corner Desk',
+            description: 'A desk designed to fit into a corner of a room, often maximizing space efficiency.',
+            price: '199.99',
+            stock_quantity: '15',
+            image_url: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZgv193qk3ulnVJSRO9Fais867tZ90vboN1PgECfm2sA&s'
+        });
+        
+        await createProducts({
+            name: 'Folding Table',
+            description: 'A table with legs that fold up against the underside of the table.',
+            price: '69.99',
+            stock_quantity: '30',
+            image_url: 'https://cdn11.bigcommerce.com/s-lxku4v/images/stencil/1280x1280/products/1194/27417/81KALZZUWO-20171115-153352__06387.1522101903.jpg?c=2&imbypass=on'
+        });
+        
+        await createProducts({
+            name: 'Cabinet',
+            description: 'A piece of furniture with doors and shelves, used for storing or displaying items.',
+            price: '179.99',
+            stock_quantity: '25',
+            image_url: 'https://target.scene7.com/is/image/Target/GUEST_afb9cbce-5551-46ce-9d95-fb68ce425f33?wid=488&hei=488&fmt=pjpeg'
+        });
+        
+        await createProducts({
+            name: 'Accent Chair',
+            description: 'A chair designed to stand out and add character to a room\'s decor.',
+            price: '149.99',
+            stock_quantity: '20',
+            image_url: 'https://m.media-amazon.com/images/I/71q32o2in-L.jpg'
+        });
+        
+        await createProducts({
+            name: 'Rocking Chair',
+            description: 'A chair mounted on curved bands that allow it to rock back and forth.',
+            price: '199.99',
+            stock_quantity: '15',
+            image_url: 'https://target.scene7.com/is/image/Target/GUEST_857bd992-09f8-4d8f-9950-3fdc92abef3d'
+        });
+        
+        await createProducts({
+            name: 'Console Table',
+            description: 'A narrow table designed to be placed against a wall.',
+            price: '99.99',
+            stock_quantity: '25',
+            image_url: 'https://vinnahomeandkitchen.com/cdn/shop/files/LikeToBeHomeSpring-120_1.jpg?v=1707078662g'
+        });
+        
+        await createProducts({
+            name: 'Bean Bag Chair',
+            description: 'A large fabric bag filled with small polystyrene beads, used as a seat.',
+            price: '49.99',
+            stock_quantity: '30',
+            image_url: 'https://img.fruugo.com/product/2/92/848114922_max.jpg'
+        });
+
+        await createProducts({
+            name: 'Chaise Lounge',
+            description: 'A long chair for reclining, with a back and a single armrest.',
+            price: '299.99',
+            stock_quantity: '10',
+            image_url: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQiYVyAj7axzek01U7dhSl6S31rbjeuGwqFXZDnS3s2sA&s'
+        });
+        
+        
 
         console.log('Initial products created successfully!');
     } catch (err) {
